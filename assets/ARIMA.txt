@@ -1,0 +1,33 @@
+ARIMA models are general class of models for forecasting a time series which can be made to be “stationary”. While exponential smoothing models were based on a description of trend and seasonality in the data, ARIMA models aim to describe the autocorrelations in the data.
+
+ARIMA model has 3 components: the autoregression component (AR), the integration component (I) and the moving average component(MA). 
+
+AR modeling of a time series is that the observed value depends on some linear combination of previous observed values up to a defined maximum lag (denoted p). Can be justified on the grounds of habit persistence. Sometimes prices are said to follow such a process.
+
+MA component of a time series is that the observed value is a random error term plus some linear combination of previous random error terms up to a defined maximum lag (denoted q). Such processes are often used to model shocks to a system.
+
+The process of differencing is known as an integration part (I). The d parameter tells us how many times we need to difference the data to get a stationarity property.
+
+Seasonal ARIMA allows for the presence of seasonality in a series. This leads to the seasonal ARIMA(p,d,q,P,D,Q,m), where P, D and Q refer to the orders of the seasonal AR, I and MA parts of the model respectively and m is the number of periods per season
+
+
+----------------------------------
+
+User may toggle between "Seasonal" and  "Non-seasonal" model, using "Seasonality" switch. Take into condideration, that the "Seasonality --> Target seasonal factor" and the "Seasonality --> Frequency" are only a recommendation. If one of the parameters is found to be incopatible with data, the "automatic" mode is activated 
+
+
+"Model customization" group of parameters used to control ARIMA optimization. "Allow mean" and "Allow drift" allow one additional non-zero term to the model, thier inforecement depends on d (the order of differencing). The first is enforced if d=0, the second if d = 1. 
+
+Box-Cox transformation is used to remove non-stationarity of time -series in variance, which is not always removed by differencing. 
+The parameter "lambda" of the transformation may be found automatically or set manually by advanced user. 
+
+The parameter "Stepwise selection" triggers a stepwise optimization scheme. If "FALSE" algorithm evaluates all the possible models exhaustively, and may be very slow. 
+
+"Info and warnings -> Output information criteria" allows to output one of the common infromation criterias: Akaike's Information Criterion (AIC), Corrected Akaike's Information Criterion (AICc), or Schwarz's Bayesian Information Criterion (BIC).
+In general, any infromation criteria is a measure of the relative quality of statistical models for a given set of data. It is inverse-proportional to the residuals and proportional to the number of estimated parameters in the model. 
+
+
+ 
+
+ 
+

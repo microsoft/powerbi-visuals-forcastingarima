@@ -8,7 +8,7 @@
     },
     {
       "displayName": "Value",
-      "description": "Numeric variable",
+      "description": "Numeric column",
       "kind": "Measure",
       "name": "Value"
     }
@@ -81,7 +81,7 @@
     },
     "settings_forecastPlot_params": {
       "displayName": "Forecasting settings",
-      "description": "All common ARIMA models are provided; if one of the seasonal models is selected, it will be used instead of the non-seasonal model",
+      "description": "Forecasting settings",
       "properties": {
         "forecastLength": {
           "displayName": "Forecast length",
@@ -222,7 +222,7 @@
         },
         "targetSeason": {
           "displayName": "Target seasonal factor",
-          "description": "Specify, if time series is influenced by known seasonal factors. The the number of observations per season is limited by 24. Non compatible seasonality will be ignored",
+          "description": "Specify recommended seasonal factor. The the number of observations per season is limited by 24. Non compatible seasonality will be ignored",
           "type": {
             "enumeration": [
               {
@@ -261,8 +261,8 @@
           }
         },
         "knownFrequency": {
-          "displayName": "Seasonality frequency",
-          "description": "Specify, if time series is influenced by known seasonal factors of known length. The units are in number of observations",
+          "displayName": "Frequency",
+          "description": "Number of samples per season. Non compatible inputs will be ignored.",
           "type": {
             "numeric": true
           }
@@ -422,9 +422,9 @@
             "bool": true
           }
         },
-        "fullEnumeration": {
-          "displayName": "Full enumeration (slow)",
-          "description": "If FALSE, will do stepwise selection (faster). Otherwise, it searches over all models (can be very slow).",
+        "stepwiseSelection": {
+          "displayName": "Stepwise selection",
+          "description": "If TRUE, will do stepwise selection (faster). Otherwise, it searches over all models (can be very slow).",
           "type": {
             "bool": true
           }

@@ -47,7 +47,7 @@ module powerbi.extensibility.visual {
         maxD: string;
         allowDrift: boolean;
         allowMean: boolean;
-        fullEnumeration: boolean;
+        stepwiseSelection: boolean;
         boxCoxTransform: string;
         lambda: number;
     }
@@ -112,24 +112,24 @@ module powerbi.extensibility.visual {
             this.settings_model_params = <VisualSettingsModelParams>{
                 maxp: "3",
                 maxq: "3",
-                maxP: "3",
-                maxQ: "3",
+                maxP: "2",
+                maxQ: "2",
                 maxd: "2",
-                maxD: "2",
+                maxD: "1",
                 allowDrift: true,
-                allowMean: false,
-                fullEnumeration: false,
+                allowMean: true,
+                stepwiseSelection: true,
                 boxCoxTransform: "off",
                 lambda: 0.1,
             }
             this.settings_userModel_params = <VisualSettingsUserModelParams>{
                 show: false,
-                p: "3",
-                q: "3",
-                P: "3",
-                Q: "3",
-                d: "2",
-                D: "2",
+                p: "1",
+                q: "1",
+                P: "1",
+                Q: "1",
+                d: "1",
+                D: "0",
             }
 
 
@@ -144,8 +144,8 @@ module powerbi.extensibility.visual {
 
             this.settings_additional_params = <VisualAdditionalParams>{
                 show: true,
-                textSize: 10,
-                textColor: "gray",
+                textSize: 12,
+                textColor: "brown",
                 infoCriteria: "none"
             };
         }
@@ -175,25 +175,25 @@ module powerbi.extensibility.visual {
             this.settings_model_params = <VisualSettingsModelParams>{
                 maxp: getValue<string>(dataView.metadata.objects, 'settings_model_params', 'maxp', "3"),
                 maxq: getValue<string>(dataView.metadata.objects, 'settings_model_params', 'maxq', "3"),
-                maxP: getValue<string>(dataView.metadata.objects, 'settings_model_params', 'maxP', "3"),
-                maxQ: getValue<string>(dataView.metadata.objects, 'settings_model_params', 'maxQ', "3"),
+                maxP: getValue<string>(dataView.metadata.objects, 'settings_model_params', 'maxP', "2"),
+                maxQ: getValue<string>(dataView.metadata.objects, 'settings_model_params', 'maxQ', "2"),
                 maxd: getValue<string>(dataView.metadata.objects, 'settings_model_params', 'maxd', "2"),
-                maxD: getValue<string>(dataView.metadata.objects, 'settings_model_params', 'maxD', "2"),
+                maxD: getValue<string>(dataView.metadata.objects, 'settings_model_params', 'maxD', "1"),
                 allowDrift: getValue<boolean>(dataView.metadata.objects, 'settings_model_params', 'allowDrift', true),
-                allowMean: getValue<boolean>(dataView.metadata.objects, 'settings_model_params', 'allowMean', false),
-                fullEnumeration: getValue<boolean>(dataView.metadata.objects, 'settings_model_params', 'fullEnumeration', false),
+                allowMean: getValue<boolean>(dataView.metadata.objects, 'settings_model_params', 'allowMean', true),
+                stepwiseSelection: getValue<boolean>(dataView.metadata.objects, 'settings_model_params', 'stepwiseSelection', true),
                 boxCoxTransform: getValue<string>(dataView.metadata.objects, 'settings_model_params', 'boxCoxTransform', "off"),
                 lambda: getValue<number>(dataView.metadata.objects, 'settings_model_params', 'lambda', 0.1),
             }
 
             this.settings_userModel_params = <VisualSettingsUserModelParams>{
                 show: getValue<boolean>(dataView.metadata.objects, 'settings_userModel_params', 'show', false),
-                p: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'p', "3"),
-                q: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'q', "3"),
-                P: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'P', "3"),
-                Q: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'Q', "3"),
-                d: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'd', "2"),
-                D: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'D', "2"),
+                p: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'p', "1"),
+                q: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'q', "1"),
+                P: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'P', "1"),
+                Q: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'Q', "1"),
+                d: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'd', "1"),
+                D: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'D', "0"),
             }
 
             this.settings_graph_params = <VisualGraphParams>{
@@ -205,8 +205,8 @@ module powerbi.extensibility.visual {
 
             this.settings_additional_params = <VisualAdditionalParams>{
                 show: getValue<boolean>(dataView.metadata.objects, 'settings_additional_params', 'show', true),
-                textSize: getValue<number>(dataView.metadata.objects, 'settings_additional_params', 'textSize', 10),
-                textColor: getValue<string>(dataView.metadata.objects, 'settings_additional_params', 'textColor', "gray"),
+                textSize: getValue<number>(dataView.metadata.objects, 'settings_additional_params', 'textSize', 12),
+                textColor: getValue<string>(dataView.metadata.objects, 'settings_additional_params', 'textColor', "brown"),
                 infoCriteria: getValue<string>(dataView.metadata.objects, 'settings_additional_params', 'infoCriteria', "none")
 
             }
@@ -302,7 +302,7 @@ module powerbi.extensibility.visual {
                           objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                            lambda: inMinMax(this.settings_model_params.lambda, -1, 2)
+                            lambda: inMinMax(this.settings_model_params.lambda, -0.5, 1.5)
                         },
                       
                     });
@@ -310,7 +310,7 @@ module powerbi.extensibility.visual {
                       objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                             fullEnumeration: this.settings_model_params.fullEnumeration
+                             stepwiseSelection: this.settings_model_params.stepwiseSelection
                         },
                         selector: null
                     });

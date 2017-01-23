@@ -29,17 +29,10 @@
 
 Sys.setlocale("LC_ALL","English") # internationalization
 
-#For DEBUG uses:
-#save(list = ls(all.names = TRUE), file='c:/Users/boefraty/Temp/tempData.Rda')
-load(file='c:/Users/boefraty/Temp/tempData.Rda')
-
 
 ############ User Parameters #########
 
 
-##PBI_PARAM: Should warnings text be displayed?
-#Type:logical, Default:TRUE, Range:NA, PossibleValues:NA, Remarks: NA
-showWarnings = TRUE
 
 ##PBI_PARAM: Should additional info about the forcasting method be displayed?
 #Type:logical, Default:TRUE, Range:NA, PossibleValues:NA, Remarks: NA
@@ -47,7 +40,8 @@ showInfo=TRUE
 if(exists("settings_additional_params_show"))
   showInfo = settings_additional_params_show
 
-
+##PBI_PARAM: Output information criteria
+#Type:enum, Default:"none", Range:NA, PossibleValues:none, AIC,BIC,AICc, Remarks: NA
 infoCriteria = "none"
 if(exists("settings_additional_params_infoCriteria"))
   infoCriteria = settings_additional_params_infoCriteria
@@ -63,135 +57,151 @@ if(exists("settings_forecastPlot_params_forecastLength"))
   forecastLength = round(max(min(forecastLength,1e+6),1))
 }
 
+##PBI_PARAM: Confidence level
+#Type:enum, Default:"0.85", Range:NA, PossibleValues:0, 0.5 etc, Remarks: NA
 confInterval1 = 0.85
 if(exists("settings_forecastPlot_params_confInterval1"))
 {
   confInterval1 = as.numeric(settings_forecastPlot_params_confInterval1)
 }
+
+
+##PBI_PARAM: Confidence level
+#Type:enum, Default:"0.95", Range:NA, PossibleValues:0, 0.5 etc, Remarks: NA
 confInterval2 = 0.95
 if(exists("settings_forecastPlot_params_confInterval2"))
 {
   confInterval2 = as.numeric(settings_forecastPlot_params_confInterval2)
 }
-if(confInterval1 > confInterval2)
-{#switch
-  temp = confInterval1
-  confInterval1 = confInterval2
-  confInterval2 = temp
-}
 
 
+##PBI_PARAM: Does the model assume seasonality? 
+#Type:logical, Default:TRUE, Range:NA, PossibleValues:NA, Remarks: NA
 withSeasonality = TRUE 
 if(exists("settings_seasonality_params_show"))
   withSeasonality = settings_seasonality_params_show
 
 
 ##PBI_PARAM target Season
-#Type: string, Default:"Automatic", Range:NA, PossibleValues:"Automatic","Hour","Day","Week", ...
+#Type: string, Default:"automatic", Range:NA, PossibleValues:"automatic","hour","day","week", ...
 targetSeason = "automatic"
 if(exists("settings_seasonality_params_targetSeason"))
   targetSeason = settings_seasonality_params_targetSeason
 
+##PBI_PARAM target frequency (samples per period)
+#Type: numeric, Default:12 , Range:[2,10^6], PossibleValues:NA
 knownFrequency = 12
 if(exists("settings_seasonality_params_knownFrequency")) 
   knownFrequency = min(1000000,max(2,settings_seasonality_params_knownFrequency))
 
 
+##PBI_PARAM The maximal order of the  autoregressive component
+#Type: enum/string, Default:"2", Range:NA, PossibleValues:"0","1","2","3"
 maxp  = 3
 if(exists("settings_model_params_maxp")) 
   maxp = as.numeric(settings_model_params_maxp)
 
+##PBI_PARAM The maximal order of the  moving average component
+#Type: enum/string, Default:"2", Range:NA, PossibleValues:"0","1","2","3"
 maxq  = 3
 if(exists("settings_model_params_maxq")) 
   maxq = as.numeric(settings_model_params_maxq)
 
+##PBI_PARAM The maximal degree of the differentiation
+#Type: enum/string, Default:"2", Range:NA, PossibleValues:"0","1","2"
 maxd  = 2
 if(exists("settings_model_params_maxd")) 
   maxd = as.numeric(settings_model_params_maxd)
 
-maxP  = 3
+##PBI_PARAM The maximal order of the seasonal autoregressive component
+#Type: enum/string, Default:"2", Range:NA, PossibleValues:"0","1","2","3"
+maxP  = 2 
 if(exists("settings_model_params_maxP")) 
   maxP = as.numeric(settings_model_params_maxP)
 
-maxQ  = 3
+##PBI_PARAM The maximal order of the seasonal moving average component
+#Type: enum/string, Default:"2", Range:NA, PossibleValues:"0","1","2","3"
+maxQ  = 2
 if(exists("settings_model_params_maxQ")) 
   maxQ = as.numeric(settings_model_params_maxQ)
 
-maxD  = 2
+##PBI_PARAM The maximal degree of the seasonal differentiation
+#Type: enum/string, Default:"2", Range:NA, PossibleValues:"0","1","2"
+maxD  = 1
 if(exists("settings_model_params_maxD")) 
   maxD = as.numeric(settings_model_params_maxD)
 
-allowDrift  = FALSE
+##PBI_PARAM: Should the ARIMA model include a linear drift term?
+#Type:logical, Default:FALSE, Range:NA, PossibleValues:NA, Remarks: NA
+allowDrift  = TRUE
 if(exists("settings_model_params_allowDrift")) 
   allowDrift = (settings_model_params_allowDrift)
 
+##PBI_PARAM: Should the ARIMA model include a mean term?
+#Type:logical, Default:FALSE, Range:NA, PossibleValues:NA, Remarks: NA
 allowMean  = FALSE
 if(exists("settings_model_params_allowMean")) 
   allowMean = settings_model_params_allowMean
 
-fullEnumeration  = FALSE
-if(exists("settings_model_params_fullEnumeration")) 
-  fullEnumeration = settings_model_params_fullEnumeration
+##PBI_PARAM: If TRUE, will do stepwise selection (faster). Otherwise, it searches over all models (can be very slow).
+#Type:logical, Default:TRUE, Range:NA, PossibleValues:NA, Remarks: NA
+stepwiseSelection  = TRUE
+if(exists("settings_model_params_stepwiseSelection")) 
+  stepwiseSelection = settings_model_params_stepwiseSelection
 
-
+##PBI_PARAM Box-Cox transformation
+#Type: enum/string, Default:"off", Range:NA, PossibleValues:"off","manual","automatic"
 boxCoxTransform = "off"
 if(exists("settings_model_params_boxCoxTransform")) 
   boxCoxTransform = settings_model_params_boxCoxTransform
 
+##PBI_PARAM Box-Cox transformation parameter
+#Type: numeric, Default:0, Range:[-1,2], PossibleValues:NA
 lambda  = 0
 if(exists("settings_model_params_lambda")) 
-  lambda = max(-1,min(settings_model_params_lambda,2))
+  lambda = max(-0.5,min(settings_model_params_lambda,1.5))
 
+##PBI_PARAM: User model? 
+#Type:logical, Default:TRUE, Range:NA, PossibleValues:NA, Remarks: NA
 userModel  = FALSE
 if(exists("settings_userModel_params_show")) 
   userModel = settings_userModel_params_show
 
-
-p  = 3
+##PBI_PARAM The order of the autoregressive component
+#Type: enum/string, Default:"2", Range:NA, PossibleValues:"0","1","2","3"
+p  = 1
 if(exists("settings_userModel_params_p")) 
   p = as.numeric(settings_userModel_params_p)
 
-q  = 3
+##PBI_PARAM The maximal order of the moving average component
+#Type: enum/string, Default:"2", Range:NA, PossibleValues:"0","1","2","3"
+q  = 1
 if(exists("settings_userModel_params_q")) 
   q = as.numeric(settings_userModel_params_q)
 
-d  = 2
+##PBI_PARAM The degree of the differencing
+#Type: enum/string, Default:"2", Range:NA, PossibleValues:"0","1","2","3"
+d  = 1
 if(exists("settings_userModel_params_d")) 
   d = as.numeric(settings_userModel_params_d)
 
-P  = 3
+##PBI_PARAM The  order of the seasonal autoregressive component
+#Type: enum/string, Default:"2", Range:NA, PossibleValues:"0","1","2","3"
+P  = 1
 if(exists("settings_userModel_params_P")) 
   P = as.numeric(settings_userModel_params_P)
 
-Q  = 3
+##PBI_PARAM The maximal order of the seasonal moving average component
+#Type: enum/string, Default:"2", Range:NA, PossibleValues:"0","1","2","3"
+Q  = 1
 if(exists("settings_userModel_params_Q")) 
   Q = as.numeric(settings_userModel_params_Q)
 
-D  = 2
+##PBI_PARAM The degree of the differencing
+#Type: enum/string, Default:"2", Range:NA, PossibleValues:"0","1","2","3"
+D  = 0
 if(exists("settings_userModel_params_D")) 
   D = as.numeric(settings_userModel_params_D)
-
-lowerConfInterval = confInterval1
-upperConfInterval = confInterval2
-
-###############Library Declarations###############
-
-libraryRequireInstall = function(packageName, ...)
-{
-  if(!require(packageName, character.only = TRUE)) 
-    warning(paste("*** The package: '", packageName, "' was not installed ***",sep=""))
-}
-
-
-libraryRequireInstall("scales")
-libraryRequireInstall("forecast")
-libraryRequireInstall("zoo")
-
-###############Internal parameters definitions#################
-
-#PBI_PARAM Minimal number of points
-#Type:integer, Default:10, Range:[0,], PossibleValues:NA, Remarks: NA
-minPoints = 10
 
 ##PBI_PARAM Color of time series line
 #Type:string, Default:"orange", Range:NA, PossibleValues:"orange","blue","green","black"
@@ -211,6 +221,31 @@ transparency = 1
 if(exists("settings_graph_params_percentile"))
   transparency = as.numeric(settings_graph_params_percentile)/100
 
+
+###############Library Declarations###############
+
+libraryRequireInstall = function(packageName, ...)
+{
+  if(!require(packageName, character.only = TRUE)) 
+    warning(paste("*** The package: '", packageName, "' was not installed ***",sep=""))
+}
+
+
+libraryRequireInstall("scales")
+libraryRequireInstall("forecast")
+libraryRequireInstall("zoo")
+
+###############Internal parameters definitions#################
+##PBI_PARAM: Should warnings text be displayed?
+#Type:logical, Default:TRUE, Range:NA, PossibleValues:NA, Remarks: NA
+showWarnings = TRUE
+
+
+#PBI_PARAM Minimal number of points
+#Type:integer, Default:10, Range:[0,], PossibleValues:NA, Remarks: NA
+minPoints = 10
+
+
 #PBI_PARAM Shaded band for confidence interval
 #Type:logical, Default:TRUE, Range:NA, PossibleValues:NA, Remarks: NA
 fillConfidenceLevels=TRUE
@@ -223,15 +258,24 @@ if(exists("settings_graph_params_weight"))
 
 #PBI_PARAM Size of subtitle on the plot
 #Type:numeric, Default: 0.75 , Range:[0.1,5], PossibleValues:NA, Remarks: NA
-cexSub = 0.75
+cexSub = 1
 if(exists("settings_additional_params_textSize"))
   cexSub = as.numeric(settings_additional_params_textSize)/12
 
 
-infoTextColor = "gray"
+infoTextColor = "brown"
 if(exists("settings_additional_params_textColor"))
   infoTextColor = settings_additional_params_textColor
 
+if(confInterval1 > confInterval2)
+{#switch places
+  temp = confInterval1
+  confInterval1 = confInterval2
+  confInterval2 = temp
+}
+
+lowerConfInterval = confInterval1
+upperConfInterval = confInterval2
 
 
 ###############Internal functions definitions#################
@@ -451,7 +495,7 @@ pbiWarning = NULL
 if(!exists("Date") || !exists("Value"))
 {
   dataset=data.frame()
-  pbiWarning  = cutStr2Show("Both 'Date' and 'Value' fields are required.", strCex = 0.85)
+  pbiWarning  = cutStr2Show("Both 'Date' and 'Value' fields are required.", strCex = 1.1, partAvailable = 0.95)
   timeSeries=ts()
   showWarnings=TRUE
 }else{
@@ -465,7 +509,7 @@ if(!exists("Date") || !exists("Value"))
   
   
   if(N==0 && exists("Date") && nrow(Date)>0 &&  exists("Value")){
-    pbiWarning1  = cutStr2Show("Wrong date type. Only 'Date', 'Time', 'Date/Time' are allowed without hierarchy", strCex = 0.85)
+    pbiWarning1  = cutStr2Show("Wrong date type. Only 'Date', 'Time', 'Date/Time' are allowed without hierarchy", strCex = 1.1, partAvailable = 0.95)
     pbiWarning = paste(pbiWarning1, pbiWarning, sep ="\n")
     timeSeries=ts()
     showWarnings=TRUE
@@ -478,8 +522,8 @@ if(!exists("Date") || !exists("Value"))
     
     if((any(is.na(parsed_dates))))
     {
-      pbiWarning1  = cutStr2Show("Wrong or corrupted 'Date'.", strCex = 0.85)
-      pbiWarning2  = cutStr2Show("Only 'Date', 'Time', 'Date/Time' types are allowed without hierarchy", strCex = 0.85)
+      pbiWarning1  = cutStr2Show("Wrong or corrupted 'Date'.", strCex = 1.1, partAvailable = 0.95)
+      pbiWarning2  = cutStr2Show("Only 'Date', 'Time', 'Date/Time' types are allowed without hierarchy", strCex = 1.1, partAvailable = 0.95)
       pbiWarning = paste(pbiWarning1, pbiWarning2, pbiWarning, sep ="\n")
       timeSeries=ts()
       showWarnings=TRUE
@@ -548,7 +592,7 @@ if(length(timeSeries)>=minPoints) {
     fit = auto.arima(timeSeries, max.p = maxp, max.q = maxq, max.d = maxd, 
                      max.P = maxP, max.Q = maxQ, max.D = maxD,
                      seasonal= withSeasonality,allowdrift=allowDrift, allowmean=allowMean, lambda=lambda,
-                     max.order=4, parallel = FALSE, stepwise = !fullEnumeration)
+                     max.order=4, parallel = FALSE, stepwise = stepwiseSelection)
   
   
   
@@ -596,9 +640,10 @@ if(length(timeSeries)>=minPoints) {
 } else{ #empty plot
   plot.new()
   showWarnings = TRUE
-  pbiWarning<-paste(pbiWarning, "Not enough data points", sep="\n")
+  pbiWarning1 = cutStr2Show("Not enough data points", strCex = 1.1, partAvailable = 0.95)
+  pbiWarning<-paste(pbiWarning, pbiWarning1 , sep="\n")
 }
 
 #add warning as subtitle
 if(showWarnings)
-  title(main=NULL, sub=pbiWarning, outer=FALSE, col.sub = infoTextColor, cex.sub=cexSub)
+  title(main=NULL, sub=pbiWarning, outer=FALSE, col.sub = infoTextColor, cex.sub=1.1)
