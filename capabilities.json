@@ -1,0 +1,699 @@
+{
+  "dataRoles": [
+    {
+      "displayName": "Date",
+      "description": "Equally spaced date values",
+      "kind": "Grouping",
+      "name": "Date"
+    },
+    {
+      "displayName": "Value",
+      "description": "Numeric column",
+      "kind": "Measure",
+      "name": "Value"
+    }
+  ],
+  "dataViewMappings": [
+    {
+      "conditions": [
+        {
+          "Date": {
+            "max": 1
+          },
+          "Value": {
+            "max": 1
+          }
+        }
+      ],
+      "scriptResult": {
+        "dataInput": {
+          "table": {
+            "rows": {
+              "select": [
+                {
+                  "for": {
+                    "in": "Date"
+                  }
+                },
+                {
+                  "for": {
+                    "in": "Value"
+                  }
+                }
+              ],
+              "dataReductionAlgorithm": {
+                "top": {}
+              }
+            }
+          }
+        },
+        "script": {
+          "scriptProviderDefault": "R",
+          "scriptOutputType": "png",
+          "source": {
+            "objectName": "rcv_script",
+            "propertyName": "source"
+          },
+          "provider": {
+            "objectName": "rcv_script",
+            "propertyName": "provider"
+          }
+        }
+      }
+    }
+  ],
+  "objects": {
+    "rcv_script": {
+      "properties": {
+        "provider": {
+          "type": {
+            "text": true
+          }
+        },
+        "source": {
+          "type": {
+            "scripting": {
+              "source": true
+            }
+          }
+        }
+      }
+    },
+    "settings_forecastPlot_params": {
+      "displayName": "Forecasting settings",
+      "description": "Forecasting settings",
+      "properties": {
+        "forecastLength": {
+          "displayName": "Forecast length",
+          "description": "Number of data points to predict",
+          "type": {
+            "numeric": true
+          }
+        },
+        "confInterval1": {
+          "displayName": "Confidence level",
+          "description": "Select first confidence interval",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "0",
+                "value": "0"
+              },
+              {
+                "displayName": "0.2",
+                "value": "0.2"
+              },
+              {
+                "displayName": "0.4",
+                "value": "0.4"
+              },
+              {
+                "displayName": "0.5",
+                "value": "0.5"
+              },
+              {
+                "displayName": "0.75",
+                "value": "0.75"
+              },
+              {
+                "displayName": "0.8",
+                "value": "0.8"
+              },
+              {
+                "displayName": "0.9",
+                "value": "0.9"
+              },
+              {
+                "displayName": "0.95",
+                "value": "0.95"
+              },
+              {
+                "displayName": "0.975",
+                "value": "0.975"
+              },
+              {
+                "displayName": "0.98",
+                "value": "0.98"
+              },
+              {
+                "displayName": "0.99",
+                "value": "0.99"
+              },
+              {
+                "displayName": "0.995",
+                "value": "0.995"
+              },
+              {
+                "displayName": "0.999",
+                "value": "0.999"
+              }
+            ]
+          }
+        },
+        "confInterval2": {
+          "displayName": "Confidence level #2",
+          "description": "Select additional confidence interval",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "0",
+                "value": "0"
+              },
+              {
+                "displayName": "0.2",
+                "value": "0.2"
+              },
+              {
+                "displayName": "0.4",
+                "value": "0.4"
+              },
+              {
+                "displayName": "0.5",
+                "value": "0.5"
+              },
+              {
+                "displayName": "0.75",
+                "value": "0.75"
+              },
+              {
+                "displayName": "0.8",
+                "value": "0.8"
+              },
+              {
+                "displayName": "0.9",
+                "value": "0.9"
+              },
+              {
+                "displayName": "0.95",
+                "value": "0.95"
+              },
+              {
+                "displayName": "0.975",
+                "value": "0.975"
+              },
+              {
+                "displayName": "0.98",
+                "value": "0.98"
+              },
+              {
+                "displayName": "0.99",
+                "value": "0.99"
+              },
+              {
+                "displayName": "0.995",
+                "value": "0.995"
+              },
+              {
+                "displayName": "0.999",
+                "value": "0.999"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "settings_seasonality_params": {
+      "displayName": "Seasonality",
+      "properties": {
+        "show": {
+          "type": {
+            "bool": true
+          }
+        },
+        "targetSeason": {
+          "displayName": "Target seasonal factor",
+          "description": "Specify recommended seasonal factor. The the number of observations per season is limited by 24. Non compatible seasonality will be ignored",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "automatic",
+                "value": "automatic"
+              },
+              {
+                "displayName": "manual",
+                "value": "manual"
+              },
+              {
+                "displayName": "hour",
+                "value": "hour"
+              },
+              {
+                "displayName": "day",
+                "value": "day"
+              },
+              {
+                "displayName": "week",
+                "value": "week"
+              },
+              {
+                "displayName": "month",
+                "value": "month"
+              },
+              {
+                "displayName": "quater",
+                "value": "quater"
+              },
+              {
+                "displayName": "year",
+                "value": "year"
+              }
+            ]
+          }
+        },
+        "knownFrequency": {
+          "displayName": "Frequency",
+          "description": "Number of samples per season. Non compatible inputs will be ignored.",
+          "type": {
+            "numeric": true
+          }
+        }
+      }
+    },
+    "settings_model_params": {
+      "displayName": "Model Customization",
+      "properties": {
+        "maxp": {
+          "displayName": "Maximal p",
+          "description": "The maximal order of the autoregressive component",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "0",
+                "value": "0"
+              },
+              {
+                "displayName": "1",
+                "value": "1"
+              },
+              {
+                "displayName": "2",
+                "value": "2"
+              },
+              {
+                "displayName": "3",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "maxq": {
+          "displayName": "Maximal q",
+          "description": "The maximal order of the moving average component",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "0",
+                "value": "0"
+              },
+              {
+                "displayName": "1",
+                "value": "1"
+              },
+              {
+                "displayName": "2",
+                "value": "2"
+              },
+              {
+                "displayName": "3",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "maxP": {
+          "displayName": "Maximal P",
+          "description": "The maximal order of the seasonal autoregressive component",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "0",
+                "value": "0"
+              },
+              {
+                "displayName": "1",
+                "value": "1"
+              },
+              {
+                "displayName": "2",
+                "value": "2"
+              },
+              {
+                "displayName": "3",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "maxQ": {
+          "displayName": "Maximal Q",
+          "description": "The maximal order of the seasonal moving average component",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "0",
+                "value": "0"
+              },
+              {
+                "displayName": "1",
+                "value": "1"
+              },
+              {
+                "displayName": "2",
+                "value": "2"
+              },
+              {
+                "displayName": "3",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "maxd": {
+          "displayName": "Maximal d",
+          "description": "The maximal degree of differencing",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "0",
+                "value": "0"
+              },
+              {
+                "displayName": "1",
+                "value": "1"
+              },
+              {
+                "displayName": "2",
+                "value": "2"
+              }
+            ]
+          }
+        },
+        "maxD": {
+          "displayName": "Maximal D",
+          "description": "The maximal degree of seasonal differencing",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "0",
+                "value": "0"
+              },
+              {
+                "displayName": "1",
+                "value": "1"
+              },
+              {
+                "displayName": "2",
+                "value": "2"
+              }
+            ]
+          }
+        },
+        "allowDrift": {
+          "displayName": "Allow drift",
+          "description": "Should the ARIMA model include a linear drift term?",
+          "type": {
+            "bool": true
+          }
+        },
+        "allowMean": {
+          "displayName": "Allow mean",
+          "description": "Should the ARIMA model include a mean term?",
+          "type": {
+            "bool": true
+          }
+        },
+        "stepwiseSelection": {
+          "displayName": "Stepwise selection",
+          "description": "If TRUE, will do stepwise selection (faster). Otherwise, it searches over all models (can be very slow).",
+          "type": {
+            "bool": true
+          }
+        },
+        "boxCoxTransform": {
+          "displayName": "Box-Cox transformation",
+          "description": "A family of transformations that includes logarithms and power transformations. Depends on the parameter `lambda`. Recommended if the data show variation that increases or decreases with the level of the series",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "off",
+                "value": "off"
+              },
+              {
+                "displayName": "automatic",
+                "value": "automatic"
+              },
+              {
+                "displayName": "manual",
+                "value": "manual"
+              }
+            ]
+          }
+        },
+       
+        "lambda": {
+          "displayName": "lambda",
+          "description": "Box-Cox transformation parameter",
+          "type": {
+            "numeric": true
+          }
+        }
+      }
+    },
+    "settings_userModel_params": {
+      "displayName": "User defined model",
+      "properties": {
+        "show": {
+          "type": {
+            "bool": true
+          }
+        },
+        "p": {
+          "displayName": "p",
+          "description": "The order of the autoregressive component",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "0",
+                "value": "0"
+              },
+              {
+                "displayName": "1",
+                "value": "1"
+              },
+              {
+                "displayName": "2",
+                "value": "2"
+              },
+              {
+                "displayName": "3",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "q": {
+          "displayName": "q",
+          "description": "The order of the moving average component",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "0",
+                "value": "0"
+              },
+              {
+                "displayName": "1",
+                "value": "1"
+              },
+              {
+                "displayName": "2",
+                "value": "2"
+              },
+              {
+                "displayName": "3",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "P": {
+          "displayName": "P",
+          "description": "The order of the seasonal autoregressive component",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "0",
+                "value": "0"
+              },
+              {
+                "displayName": "1",
+                "value": "1"
+              },
+              {
+                "displayName": "2",
+                "value": "2"
+              },
+              {
+                "displayName": "3",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "Q": {
+          "displayName": "Q",
+          "description": "The order of the seasonal moving average component",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "0",
+                "value": "0"
+              },
+              {
+                "displayName": "1",
+                "value": "1"
+              },
+              {
+                "displayName": "2",
+                "value": "2"
+              },
+              {
+                "displayName": "3",
+                "value": "3"
+              }
+            ]
+          }
+        },
+        "d": {
+          "displayName": "d",
+          "description": "The degree of differencing",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "0",
+                "value": "0"
+              },
+              {
+                "displayName": "1",
+                "value": "1"
+              },
+              {
+                "displayName": "2",
+                "value": "2"
+              }
+            ]
+          }
+        },
+        "D": {
+          "displayName": "D",
+          "description": "The degree of seasonal differencing",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "0",
+                "value": "0"
+              },
+              {
+                "displayName": "1",
+                "value": "1"
+              },
+              {
+                "displayName": "2",
+                "value": "2"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "settings_graph_params": {
+      "displayName": "Graphical parameters",
+      "properties": {
+        "dataCol": {
+          "displayName": "History data color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "forecastCol": {
+          "displayName": "Forecast data color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "percentile": {
+          "displayName": "Opacity",
+          "type": {
+            "numeric": true
+          }
+        },
+        "weight": {
+          "displayName": "Line width",
+          "type": {
+            "numeric": true
+          }
+        }
+      }
+    },
+    "settings_additional_params": {
+      "displayName": "Info and warnings",
+      "properties": {
+        "show": {
+          "type": {
+            "bool": true
+          }
+        },
+        "textSize": {
+          "displayName": "Font size",
+          "description": "Font size used to show information",
+          "type": {
+            "numeric": true
+          }
+        },
+        "textColor": {
+          "displayName": "Text color",
+          "description": "Color used to show information",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "infoCriteria": {
+          "displayName": "Output information criteria",
+          "description": "Used only for info, does not influence the results. Select one option: Akaike's Information Criterion (AIC), Corrected Akaike's Information Criterion (AICc), or Schwarz's Bayesian Information Criterion (BIC) ",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "none",
+                "value": "none"
+              },
+              {
+                "displayName": "AIC",
+                "value": "AIC"
+              },
+              {
+                "displayName": "BIC",
+                "value": "BIC"
+              },
+              {
+                "displayName": "AICc",
+                "value": "AICc"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "suppressDefaultTitle": true
+}
