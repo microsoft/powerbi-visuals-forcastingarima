@@ -222,7 +222,7 @@
         },
         "targetSeason": {
           "displayName": "Target seasonal factor",
-          "description": "Specify recommended seasonal factor. The the number of observations per season is limited by 24. Non compatible seasonality will be ignored",
+          "description": "Recommended seasonal factor. Incompatible inputs are ignored",
           "type": {
             "enumeration": [
               {
@@ -262,7 +262,7 @@
         },
         "knownFrequency": {
           "displayName": "Frequency",
-          "description": "Number of samples per season. Non compatible inputs will be ignored.",
+          "description": "Number of samples per season. Incompatible inputs are ignored.",
           "type": {
             "numeric": true
           }
@@ -274,7 +274,7 @@
       "properties": {
         "maxp": {
           "displayName": "Maximal p",
-          "description": "The maximal order of the autoregressive component",
+          "description": "Maximal order of the autoregressive component",
           "type": {
             "enumeration": [
               {
@@ -298,7 +298,7 @@
         },
         "maxq": {
           "displayName": "Maximal q",
-          "description": "The maximal order of the moving average component",
+          "description": "Maximal order of the moving average component",
           "type": {
             "enumeration": [
               {
@@ -370,7 +370,7 @@
         },
         "maxd": {
           "displayName": "Maximal d",
-          "description": "The maximal degree of differencing",
+          "description": "Maximal degree of differencing",
           "type": {
             "enumeration": [
               {
@@ -390,7 +390,7 @@
         },
         "maxD": {
           "displayName": "Maximal D",
-          "description": "The maximal degree of seasonal differencing",
+          "description": "Maximal degree of seasonal differencing",
           "type": {
             "enumeration": [
               {
@@ -410,28 +410,28 @@
         },
         "allowDrift": {
           "displayName": "Allow drift",
-          "description": "Should the ARIMA model include a linear drift term?",
+          "description": "Allows the ARIMA model to include a linear drift term",
           "type": {
             "bool": true
           }
         },
         "allowMean": {
           "displayName": "Allow mean",
-          "description": "Should the ARIMA model include a mean term?",
+          "description": "Allows the ARIMA model include a mean term",
           "type": {
             "bool": true
           }
         },
         "stepwiseSelection": {
           "displayName": "Stepwise selection",
-          "description": "If TRUE, will do stepwise selection (faster). Otherwise, it searches over all models (can be very slow).",
+          "description": "TRUE performs a stepwise selection (faster), FALSE searches over all models (slow)",
           "type": {
             "bool": true
           }
         },
         "boxCoxTransform": {
           "displayName": "Box-Cox transformation",
-          "description": "A family of transformations that includes logarithms and power transformations. Depends on the parameter `lambda`. Recommended if the data show variation that increases or decreases with the level of the series",
+          "description": "Family of transformations that includes logarithms and power transformations. Outcome depends on the `lambda` parameter. Recommended when the data show variation that increases or decreases with the level of the series",
           "type": {
             "enumeration": [
               {
@@ -469,7 +469,7 @@
         },
         "p": {
           "displayName": "p",
-          "description": "The order of the autoregressive component",
+          "description": "Order of the autoregressive component",
           "type": {
             "enumeration": [
               {
@@ -493,7 +493,7 @@
         },
         "q": {
           "displayName": "q",
-          "description": "The order of the moving average component",
+          "description": "Order of the moving average component",
           "type": {
             "enumeration": [
               {
@@ -517,7 +517,7 @@
         },
         "P": {
           "displayName": "P",
-          "description": "The order of the seasonal autoregressive component",
+          "description": "Order of the seasonal autoregressive component",
           "type": {
             "enumeration": [
               {
@@ -541,7 +541,7 @@
         },
         "Q": {
           "displayName": "Q",
-          "description": "The order of the seasonal moving average component",
+          "description": "Order of the seasonal moving average component",
           "type": {
             "enumeration": [
               {
@@ -565,7 +565,7 @@
         },
         "d": {
           "displayName": "d",
-          "description": "The degree of differencing",
+          "description": "Degree of differencing",
           "type": {
             "enumeration": [
               {
@@ -585,7 +585,7 @@
         },
         "D": {
           "displayName": "D",
-          "description": "The degree of seasonal differencing",
+          "description": "Degree of seasonal differencing",
           "type": {
             "enumeration": [
               {
