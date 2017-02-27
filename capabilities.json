@@ -431,7 +431,7 @@
         },
         "boxCoxTransform": {
           "displayName": "Box-Cox transformation",
-          "description": "Family of transformations that includes logarithms and power transformations. Outcome depends on the `lambda` parameter. Recommended when the data show variation that increases or decreases with the level of the series",
+          "description": "Family of transformations that includes logarithms and power transformations. The outcome depends on the `lambda` parameter. Recommended when the data show variation that increases or decreases with the level of the series",
           "type": {
             "enumeration": [
               {

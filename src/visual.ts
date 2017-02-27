@@ -152,12 +152,21 @@ module powerbi.extensibility.visual {
 
         public update(options: VisualUpdateOptions) {
             let dataViews: DataView[] = options.dataViews;
+            
+            if (dataViews == null)
+                return;
+
             if (!dataViews || dataViews.length === 0)
                 return;
 
             let dataView: DataView = dataViews[0];
+
+             if (dataView == null)
+                return;
+
             if (!dataView || !dataView.metadata)
                 return;
+
 
             this.settings_forecastPlot_params = <VisualSettingsForecastPlotParams>{
                 forecastLength: getValue<number>(dataView.metadata.objects, 'settings_forecastPlot_params', 'forecastLength', 10),
