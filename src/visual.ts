@@ -120,8 +120,9 @@ module powerbi.extensibility.visual {
                 allowMean: true,
                 stepwiseSelection: true,
                 boxCoxTransform: "off",
-                lambda: 0.1,
-            }
+                lambda: 0.1
+            };
+
             this.settings_userModel_params = <VisualSettingsUserModelParams>{
                 show: false,
                 p: "1",
@@ -130,16 +131,13 @@ module powerbi.extensibility.visual {
                 Q: "1",
                 d: "1",
                 D: "0",
-            }
-
+            };
 
             this.settings_graph_params = <VisualGraphParams>{
-
                 dataCol: "blue",
                 forecastCol: "orange",
                 percentile: 40,
                 weight: 10
-
             };
 
             this.settings_additional_params = <VisualAdditionalParams>{
@@ -172,9 +170,8 @@ module powerbi.extensibility.visual {
             this.settings_seasonality_params = <VisualSettingsSeasonalityParams>{
                 show: getValue<boolean>(dataView.metadata.objects, 'settings_seasonality_params', 'show', true),
                 targetSeason: getValue<string>(dataView.metadata.objects, 'settings_seasonality_params', 'targetSeason', "year"),
-                knownFrequency: getValue<number>(dataView.metadata.objects, 'settings_seasonality_params', 'knownFrequency', 12),
-
-            }
+                knownFrequency: getValue<number>(dataView.metadata.objects, 'settings_seasonality_params', 'knownFrequency', 12)
+            };
 
             this.settings_model_params = <VisualSettingsModelParams>{
                 maxp: getValue<string>(dataView.metadata.objects, 'settings_model_params', 'maxp', "3"),
@@ -188,7 +185,7 @@ module powerbi.extensibility.visual {
                 stepwiseSelection: getValue<boolean>(dataView.metadata.objects, 'settings_model_params', 'stepwiseSelection', true),
                 boxCoxTransform: getValue<string>(dataView.metadata.objects, 'settings_model_params', 'boxCoxTransform', "off"),
                 lambda: getValue<number>(dataView.metadata.objects, 'settings_model_params', 'lambda', 0.1),
-            }
+            };
 
             this.settings_userModel_params = <VisualSettingsUserModelParams>{
                 show: getValue<boolean>(dataView.metadata.objects, 'settings_userModel_params', 'show', false),
@@ -198,22 +195,21 @@ module powerbi.extensibility.visual {
                 Q: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'Q', "1"),
                 d: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'd', "1"),
                 D: getValue<string>(dataView.metadata.objects, 'settings_userModel_params', 'D', "0"),
-            }
+            };
 
             this.settings_graph_params = <VisualGraphParams>{
                 dataCol: getValue<string>(dataView.metadata.objects, 'settings_graph_params', 'dataCol', "blue"),
                 forecastCol: getValue<string>(dataView.metadata.objects, 'settings_graph_params', 'forecastCol', "orange"),
                 percentile: getValue<number>(dataView.metadata.objects, 'settings_graph_params', 'percentile', 40),
                 weight: getValue<number>(dataView.metadata.objects, 'settings_graph_params', 'weight', 10),
-            }
+            };
 
             this.settings_additional_params = <VisualAdditionalParams>{
                 show: getValue<boolean>(dataView.metadata.objects, 'settings_additional_params', 'show', true),
                 textSize: getValue<number>(dataView.metadata.objects, 'settings_additional_params', 'textSize', 12),
                 textColor: getValue<string>(dataView.metadata.objects, 'settings_additional_params', 'textColor', "brown"),
                 infoCriteria: getValue<string>(dataView.metadata.objects, 'settings_additional_params', 'infoCriteria', "none")
-
-            }
+            };
 
             let imageUrl: string = null;
             if (dataView.scriptResult && dataView.scriptResult.payloadBase64) {
@@ -261,7 +257,7 @@ module powerbi.extensibility.visual {
                         },
                         selector: null
                     });
-                    if (this.settings_seasonality_params.targetSeason == "manual") {
+                    if (this.settings_seasonality_params.targetSeason === "manual") {
                         objectEnumeration.push({
                             objectName: objectName,
                             properties: {
@@ -278,9 +274,8 @@ module powerbi.extensibility.visual {
                         properties: {
                             maxp: this.settings_model_params.maxp,
                             maxd: this.settings_model_params.maxd,
-                            maxq: this.settings_model_params.maxq                  
-                        },
-                    
+                            maxq: this.settings_model_params.maxq
+                        }
                     });
                      if (this.settings_seasonality_params.show) {
                     objectEnumeration.push({
@@ -288,9 +283,8 @@ module powerbi.extensibility.visual {
                         properties: {
                             maxP: this.settings_model_params.maxP,
                             maxD: this.settings_model_params.maxD,
-                            maxQ: this.settings_model_params.maxQ                   
-                        },
-                    
+                            maxQ: this.settings_model_params.maxQ
+                        }
                     });
                      }
                     objectEnumeration.push({
@@ -298,17 +292,15 @@ module powerbi.extensibility.visual {
                         properties: {
                             allowDrift: this.settings_model_params.allowDrift,
                             allowMean: this.settings_model_params.allowMean,
-                            boxCoxTransform: this.settings_model_params.boxCoxTransform,                     
-                        },
-                   
+                            boxCoxTransform: this.settings_model_params.boxCoxTransform
+                        }
                     });
-                     if (this.settings_model_params.boxCoxTransform == "manual") {
+                     if (this.settings_model_params.boxCoxTransform === "manual") {
                           objectEnumeration.push({
                         objectName: objectName,
                         properties: {
                             lambda: inMinMax(this.settings_model_params.lambda, -0.5, 1.5)
-                        },
-                      
+                        }
                     });
                      }
                       objectEnumeration.push({
@@ -328,7 +320,6 @@ module powerbi.extensibility.visual {
                             p: this.settings_userModel_params.p,
                             d: this.settings_userModel_params.d,
                             q: this.settings_userModel_params.q
-                           
                         },
                         selector: null
                     });
