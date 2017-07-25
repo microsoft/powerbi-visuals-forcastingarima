@@ -25,6 +25,19 @@
 #
 # REFERENCES: https://en.wikipedia.org/wiki/Autoregressive_integrated_moving_average, https://www.otexts.org/fpp/8
 
+source('./r_files/flatten_HTML.r')
+
+
+#DEBUG in RStudio
+# fileRda = "C:/Users/boefraty/projects/PBI/R/tempData.Rda"
+# if(file.exists(dirname(fileRda)))
+# {
+#   if(Sys.getenv("RSTUDIO")!="")
+#     load(file= fileRda)
+#   else
+#     save(list = ls(all.names = TRUE), file=fileRda)
+# }
+
 
 
 Sys.setlocale("LC_ALL","English") # internationalization
@@ -32,11 +45,9 @@ Sys.setlocale("LC_ALL","English") # internationalization
 
 ############ User Parameters #########
 
-
-
 ##PBI_PARAM: Should additional info about the forcasting method be displayed?
 #Type:logical, Default:TRUE, Range:NA, PossibleValues:NA, Remarks: NA
-showInfo=TRUE
+showInfo = TRUE
 if(exists("settings_additional_params_show"))
   showInfo = settings_additional_params_show
 
@@ -48,13 +59,13 @@ if(exists("settings_additional_params_infoCriteria"))
 
 ##PBI_PARAM: Forecast length
 #Type:integer, Default:NULL, Range:NA, PossibleValues:NA, Remarks: NULL means choose forecast length automatically
-forecastLength=10
+forecastLength = 10
 if(exists("settings_forecastPlot_params_forecastLength"))
 {
   forecastLength = as.numeric(settings_forecastPlot_params_forecastLength)
   if(is.na(forecastLength))
     forecastLength = 10
-  forecastLength = round(max(min(forecastLength,1e+6),1))
+  forecastLength = round(max(min(forecastLength, 1e+6), 1))
 }
 
 ##PBI_PARAM: Confidence level
@@ -92,7 +103,7 @@ if(exists("settings_seasonality_params_targetSeason"))
 #Type: numeric, Default:12 , Range:[2,10^6], PossibleValues:NA
 knownFrequency = 12
 if(exists("settings_seasonality_params_knownFrequency")) 
-  knownFrequency = min(1000000,max(2,settings_seasonality_params_knownFrequency))
+  knownFrequency = min(1000000, max(2, settings_seasonality_params_knownFrequency))
 
 
 ##PBI_PARAM The maximal order of the  autoregressive component
@@ -219,7 +230,7 @@ if(exists("settings_graph_params_forecastCol"))
 #Type:numeric, Default:0.4, Range:[0,1], PossibleValues:NA, Remarks: NA
 transparency = 1
 if(exists("settings_graph_params_percentile"))
-  transparency = as.numeric(settings_graph_params_percentile)/100
+  transparency = as.numeric(settings_graph_params_percentile) / 100
 
 
 ###############Library Declarations###############
@@ -227,24 +238,21 @@ if(exists("settings_graph_params_percentile"))
 libraryRequireInstall = function(packageName, ...)
 {
   if(!require(packageName, character.only = TRUE)) 
-    warning(paste("*** The package: '", packageName, "' was not installed ***",sep=""))
+    warning(paste("*** The package: '", packageName, "' was not installed ***", sep = ""))
 }
 
 
 libraryRequireInstall("scales")
 libraryRequireInstall("forecast")
 libraryRequireInstall("zoo")
+libraryRequireInstall("ggplot2");
+libraryRequireInstall("plotly")
 
 ###############Internal parameters definitions#################
-##PBI_PARAM: Should warnings text be displayed?
-#Type:logical, Default:TRUE, Range:NA, PossibleValues:NA, Remarks: NA
-showWarnings = TRUE
-
 
 #PBI_PARAM Minimal number of points
 #Type:integer, Default:10, Range:[0,], PossibleValues:NA, Remarks: NA
 minPoints = 10
-
 
 #PBI_PARAM Shaded band for confidence interval
 #Type:logical, Default:TRUE, Range:NA, PossibleValues:NA, Remarks: NA
@@ -262,7 +270,8 @@ cexSub = 1
 if(exists("settings_additional_params_textSize"))
   cexSub = as.numeric(settings_additional_params_textSize)/12
 
-
+#PBI_PARAM Color for the text string of info 
+#Type:string, Default: "brown" , Range:NA, PossibleValues:NA, Remarks: NA
 infoTextColor = "brown"
 if(exists("settings_additional_params_textColor"))
   infoTextColor = settings_additional_params_textColor
@@ -277,6 +286,24 @@ if(confInterval1 > confInterval2)
 lowerConfInterval = confInterval1
 upperConfInterval = confInterval2
 
+
+#PBI_PARAM Size of labels on axes
+#Type:numeric , Default:12, Range:NA, PossibleValues:[1,50], Remarks: NA
+sizeLabel = 12
+
+#PBI_PARAM Size of warnings font
+#Type:numeric , Default:cexSub*10, Range:NA, PossibleValues:[1,50], Remarks: NA
+sizeWarn = cexSub*8
+
+#PBI_PARAM Size of ticks on axes 
+sizeTicks = 8
+
+#PBI_PARAM opacity of conf interval color
+transparencyConfInterval = 0.3 
+
+##PBI_PARAM: Should warnings text be displayed?
+#Type:logical, Default:FALSE, Range:NA, PossibleValues:NA, Remarks: NA
+showWarnings = FALSE #changed in 1.0.2 (HTML-based) to be FALSE by default 
 
 ###############Internal functions definitions#################
 
@@ -308,13 +335,17 @@ cutStr2Show = function(strText, strCex = 0.8, abbrTo = 100, isH = TRUE, maxChar 
 
 
 # Find number of ticks on X axis 
-FindTicksNum = function(n,f)
+FindTicksNum = function(n,f, flag_ggplot = TRUE)
 {
-  tn = 10 # default minimum
+  factorGG = (if(flag_ggplot) 0.525 else 1)
+  
+  tn = 10* factorGG # default minimum
+  mtn = 20 * factorGG # default max
+  
   D = 2 # tick/inch
   numCircles = n/f
   xSize = par()$din[1]
-  tn = max(round(xSize*D),tn)
+  tn = min(max(round(xSize*D*factorGG),tn),mtn)
   return(tn) 
 }
 
@@ -357,13 +388,13 @@ flexFormat = function(dates, orig_dates, freq = 1, myformat = NULL)
     }
   }
   if(is.null(myformat) && timeChange)
-    if(years>1){
+    if(years > 1){
       myformat = "%m/%d/%y %H:%M" # 01/20/10 12:00
     }else{
-      if(days>1){
+      if(days > 1){
         myformat = "%b %d, %H:%M" # Jan 01 12:00
       }else{
-        if(days<=1){
+        if(days <= 1){
           myformat = "%H:%M" # Jan 01 12:00
         }  
       }
@@ -380,7 +411,7 @@ flexFormat = function(dates, orig_dates, freq = 1, myformat = NULL)
 
 
 # verify if "perSeason" is good for "frequency" parameter
-freqSeason1 = function(seasons,perSeason)
+freqSeason1 = function(seasons, perSeason)
 {
   if((seasons > 5 && perSeason > 3) || (seasons > 2 && perSeason > 7))
     return (perSeason)
@@ -394,8 +425,8 @@ findFreqFromDates1 = function(dates, targetS = "Automatic")
 {
   freq = 1
   N = length(dates)
-  nnn = c("hour", "day", "week", "month", "quater", "year")
-  seasons = rep(NaN,6)
+  nnn = c("hour", "day", "week", "month", "quarter", "year")
+  seasons = rep(NaN, 6)
   names(seasons) = nnn
   perSeason = seasons
   
@@ -404,7 +435,7 @@ findFreqFromDates1 = function(dates, targetS = "Automatic")
   seasons["week"]=round(as.numeric(difftime(dates[length(dates)],dates[1]),units="weeks"))
   seasons["month"] = seasons["day"]/30
   seasons["year"] = seasons["day"]/365.25
-  seasons["quater"] = seasons["year"]*4
+  seasons["quarter"] = seasons["year"]*4
   
   perSeason = N/seasons
   
@@ -414,7 +445,7 @@ findFreqFromDates1 = function(dates, targetS = "Automatic")
   if(freq < 2) # if TRUE, target season factor is not good 
     freq = 1
   
-  for( s in rev(nnn)) # check year --> Quater --> etc
+  for( s in rev(nnn)) # check year --> quarter --> etc
     if(freq == 1 )
       freq = freqSeason1(seasons[s],perSeason[s])
   
@@ -453,22 +484,22 @@ GetFitMethodString = function(fit,withSeasonality, infoCriteria = "none")
   
   resString = as.character(arimaorder(fit))
   
-  skey = c("p","d","q","P","D","Q", "m")
+  skey = c("p","d","q","P","D","Q","m")
   skey = skey[1:length(resString)]
   skey = paste(skey, collapse = ",")
   
-  resString = paste("ARIMA: (",skey,") = (",paste(resString,collapse = ","),")",sep ="")
+  resString = paste("ARIMA: (",skey,") = (",paste(resString,collapse = ","),")",sep = "")
   # add more info 
   if(infoCriteria != "none")
   {
     if(infoCriteria == "AIC")
-      resString = paste(resString, "; AIC = ", as.character(round(fit$aic,2)), sep ="")
+      resString = paste(resString, "; AIC = ", as.character(round(fit$aic,2)), sep = "")
     else
       if(infoCriteria == "AICc")
-        resString = paste(resString, "; AICc = ", as.character(round(fit$aicc,2)), sep ="")
+        resString = paste(resString, "; AICc = ", as.character(round(fit$aicc,2)), sep = "")
       else
         if(infoCriteria == "BIC")
-          resString = paste(resString, "; BIC = ", as.character(round(fit$bic,2)), sep ="")
+          resString = paste(resString, "; BIC = ", as.character(round(fit$bic,2)), sep = "")
   }
   
   return(resString)
@@ -488,6 +519,26 @@ FindBoxCoxLambda = function(timeSeries, boxCoxTransform, lambda = NULL,  mymetho
 }
 
 
+getAngleXlabels = function(mylabels)
+{
+  NL = length(mylabels)
+  NC = nchar(mylabels[1]) * 1.1
+  
+  lenPerTick = par()$din[1] / (NL * NC)
+  
+  #lot of space -> 0 
+  if(lenPerTick > 0.15)
+    return(0)
+  
+  # no space --> -90
+  if(lenPerTick < 0.070)
+    return(90)
+  
+  # few space --> - 45
+  return(45)
+  
+}
+
 
 ###############Upfront input correctness validations (where possible)#################
 pbiWarning = NULL
@@ -495,7 +546,7 @@ pbiWarning = NULL
 if(!exists("Date") || !exists("Value"))
 {
   dataset=data.frame()
-  pbiWarning  = cutStr2Show("Both 'Date' and 'Value' fields are required.", strCex = 1.1, partAvailable = 0.95)
+  pbiWarning  = cutStr2Show("Both 'Date' and 'Value' fields are required.", strCex = 1.55, partAvailable = 0.95)
   timeSeries=ts()
   showWarnings=TRUE
 }else{
@@ -509,48 +560,56 @@ if(!exists("Date") || !exists("Value"))
   
   
   if(N==0 && exists("Date") && nrow(Date)>0 &&  exists("Value")){
-    pbiWarning1  = cutStr2Show("Wrong date type. Only 'Date', 'Time', 'Date/Time' are allowed without hierarchy", strCex = 1.1, partAvailable = 0.95)
-    pbiWarning = paste(pbiWarning1, pbiWarning, sep ="\n")
+    
+    pbiWarning1  = cutStr2Show("Wrong date type.", strCex = sizeWarn/6, partAvailable = 0.85)
+    pbiWarning2 = cutStr2Show("Only 'Date', 'Time', 'Date/Time' are allowed without hierarchy. ", strCex = sizeWarn/6, partAvailable = 0.85)
+    pbiWarning = paste(pbiWarning1, pbiWarning2, pbiWarning, sep ="<br>")
+    
     timeSeries=ts()
     showWarnings=TRUE
   }else {
-    
-    
-    dataset = dataset[order(dataset[,1]),]
-    parsed_dates=strptime(dataset[,1],"%Y-%m-%dT%H:%M:%S",tz="UTC")
-    labTime = names(Date)[1]
-    
-    if((any(is.na(parsed_dates))))
+    if(N < minPoints)
     {
-      pbiWarning1  = cutStr2Show("Wrong or corrupted 'Date'.", strCex = 1.1, partAvailable = 0.95)
-      pbiWarning2  = cutStr2Show("Only 'Date', 'Time', 'Date/Time' types are allowed without hierarchy", strCex = 1.1, partAvailable = 0.95)
-      pbiWarning = paste(pbiWarning1, pbiWarning2, pbiWarning, sep ="\n")
       timeSeries=ts()
       showWarnings=TRUE
     }
     else
     {
-      interval = difftime(parsed_dates[length(parsed_dates)],parsed_dates[1])/(length(parsed_dates)-1) # force equal spacing 
+      dataset = dataset[order(dataset[,1]),]
+      parsed_dates=strptime(dataset[,1],"%Y-%m-%dT%H:%M:%S",tz="UTC")
+      labTime = names(Date)[1]
       
-      if(withSeasonality==FALSE)
-        targetSeason = "none"
-      
-      myFreq = getFrequency1(parsed_dates, values = dataset[,2], tS = targetSeason, f = knownFrequency)
-      
-   
-      if(myFreq < 2)
-        withSeasonality = FALSE
-      
-      if(withSeasonality == FALSE)
+      if((any(is.na(parsed_dates))))
       {
-        maxP = maxQ = maxD = P = Q = D = 0 
+        pbiWarning1  = cutStr2Show("Wrong or corrupted 'Date'.", strCex = sizeWarn/6, partAvailable = 0.85)
+        pbiWarning2  = cutStr2Show("Only 'Date', 'Time', 'Date/Time' types are allowed without hierarchy", strCex = sizeWarn/6, partAvailable = 0.85)
+        pbiWarning = paste(pbiWarning1, pbiWarning2, pbiWarning, sep ="<br>")
+        timeSeries=ts()
+        showWarnings=TRUE
+      }
+      else
+      {
+        interval = difftime(parsed_dates[length(parsed_dates)],parsed_dates[1])/(length(parsed_dates)-1) # force equal spacing 
+        
+        if(withSeasonality==FALSE)
+          targetSeason = "none"
+        
+        myFreq = getFrequency1(parsed_dates, values = dataset[,2], tS = targetSeason, f = knownFrequency)
+        
+        
+        if(myFreq < 2)
+          withSeasonality = FALSE
+        
+        if(withSeasonality == FALSE)
+        {
+          maxP = maxQ = maxD = P = Q = D = 0 
+        }
+        
+        
+        timeSeries=ts(data = dataset[,2], start=1, frequency = round(myFreq))
       }
       
-      
-      timeSeries=ts(data = dataset[,2], start=1, frequency = round(myFreq))
     }
-    
-    
   }
 }
 
@@ -597,8 +656,10 @@ if(length(timeSeries)>=minPoints) {
   
   
   fit$method = GetFitMethodString(fit,withSeasonality, infoCriteria)
-  if(lowerConfInterval==0)
-    lowerConfInterval = NULL; 
+  
+  if(lowerConfInterval <= 0.1)
+    lowerConfInterval = NULL;
+  
   prediction = forecast(fit, level=c(lowerConfInterval,upperConfInterval), h=forecastLength)
   
   lastValue = tail(prediction$x,1)
@@ -614,15 +675,13 @@ if(length(timeSeries)>=minPoints) {
   if(showInfo)
   {
     pbiInfo=paste(pbiInfo,"", fit$method, sep="")
-    pbiInfo = cutStr2Show(pbiInfo,strCex = cexSub, isH = TRUE, maxChar = 20)
+    #pbiInfo = cutStr2Show(pbiInfo,strCex = cexSub, isH = TRUE, maxChar = 20)
+    pbiInfo= cutStr2Show(pbiInfo, strCex = sizeWarn / 6, isH = TRUE, partAvailable = 0.9, maxChar = 20)
   }
   
-  labTime = cutStr2Show(labTime, strCex =1.1, isH = TRUE)
-  labValue = cutStr2Show(labValue, strCex =1.1, isH = FALSE)
   
-  plot.forecast(prediction, lwd=pointCex, col=alpha(pointsCol,transparency), fcol=alpha(forecastCol,transparency), flwd = pointCex, shaded=fillConfidenceLevels,
-                main = "", sub = pbiInfo, col.sub = infoTextColor, cex.sub = cexSub, xlab = labTime, ylab = labValue, xaxt = "n")
-  
+  labTime = cutStr2Show(labTime, strCex = sizeLabel/6, isH = TRUE, partAvailable = 0.8)
+  labValue = cutStr2Show(labValue, strCex = sizeLabel/6, isH = FALSE, partAvailable = 0.8)
   
   NpF = (length(parsed_dates))+forecastLength
   freq = frequency(timeSeries)
@@ -633,17 +692,156 @@ if(length(timeSeries)>=minPoints) {
   x_with_f = as.POSIXlt(seq(from=parsed_dates[1], to = (parsed_dates[1]+interval*(length(parsed_dates)+forecastLength)), length.out = numTicks))
   x_with_forcast_formatted = flexFormat(dates = x_with_f, orig_dates = parsed_dates, freq = freq)
   
-  correction = (NpF-1)/(numTicks-1) # needed due to subsampling of ticks
-  axis(1, at = 1+correction*((0:(numTicks-1))/freq), labels = x_with_forcast_formatted)
+  
+  x_full = as.POSIXlt(seq(from=parsed_dates[1], to = tail(parsed_dates,1), length.out = length(parsed_dates)))
+  f_full = as.POSIXlt(seq(from=tail(parsed_dates,1), to = (tail(parsed_dates,1)+interval*(forecastLength)), length.out = forecastLength+1))
+  
+  # correction = (NpF-1)/(numTicks-1) # needed due to subsampling of ticks
+  
+  if(!showWarnings)
+  {
+    
+    #HTML
+    #historical data
+    x1 = seq(1,length(prediction$x))
+    y1 = as.numeric(prediction$x)
+    
+    p1a<-ggplot(data=NULL,aes(x=x1,y=y1) )
+    p1a<-p1a+geom_line(col=alpha(pointsCol,transparency), lwd = pointCex)
+    
+    #forecast
+    x2 = seq(length(prediction$x),length.out = length(prediction$mean))
+    y2 = as.numeric(prediction$mean)
+    
+    
+    p1a <- p1a + geom_line(inherit.aes = FALSE ,data = NULL, mapping = aes(x = x2, y = y2), col=alpha(forecastCol,transparency), lwd = pointCex)
+    
+    #conf intervals
+    
+    if(!is.null(lowerConfInterval))
+    {
+      lower2 = lower1 = as.numeric(prediction$lower[,1])
+      upper2 = upper1 = as.numeric(prediction$upper[,1])
+      id = x2
+      
+      names(lower2) = names(upper2) = names(lower1) = names(upper1)=  names(f_full) = id   
+      cf_full = as.character(f_full)
+      
+      p1a <- p1a + geom_ribbon( inherit.aes = FALSE , mapping = aes(x = id, ymin = lower1 , ymax = upper1), fill = "blue4", alpha = 0.25)
+    }
+    
+    if(upperConfInterval>0.01)
+    {
+      if(!is.null(lowerConfInterval))
+      {  
+        lower2 = as.numeric(prediction$lower[,2])
+        upper2 = as.numeric(prediction$upper[,2])
+      }
+      else
+      {  
+        lower1 = lower2 = as.numeric(prediction$lower[,1])
+        upper1 =upper2 = as.numeric(prediction$upper[,1])
+      } 
+      
+      
+      id = x2
+      
+      names(lower2) = names(upper2) = names(lower1) = names(upper1)=  names(f_full) = id 
+      cf_full = as.character(f_full)
+      
+      
+      p1a <- p1a + geom_ribbon( inherit.aes = FALSE , mapping = aes(x = id, ymin = lower2, ymax = upper2), fill = "gray50", alpha = 0.25)
+    }
+    # if(upperConfInterval>0.01)
+    # {
+    #   lower1 = as.numeric(prediction$lower[,1])
+    #   upper1 = as.numeric(prediction$upper[,1])
+    #   lower2 = as.numeric(prediction$lower[,2])
+    #   upper2 = as.numeric(prediction$upper[,2])
+    #   id = x2
+    #   
+    #   names(lower1) = names(lower2) = names(upper1)= names(upper2) = names(f_full) = id   
+    #   cf_full = as.character(f_full)
+    #   
+    #   p1a <- p1a + geom_ribbon( inherit.aes = FALSE , mapping = aes(x = id, ymin = lower1 , ymax = upper1), fill = "blue4", alpha = 0.25)
+    #   p1a <- p1a + geom_ribbon( inherit.aes = FALSE , mapping = aes(x = id, ymin = lower2, ymax = upper2), fill = "gray50", alpha = 0.25)
+    # }
+    
+    #design 
+    p1a <- p1a + labs (title = pbiInfo, caption = NULL) + theme_bw() 
+    p1a <- p1a + xlab(labTime) + ylab(labValue) 
+    p1a <- p1a + scale_x_continuous(breaks = seq(1,length(prediction$x) + length(prediction$mean)-1, length.out = numTicks), labels = x_with_forcast_formatted) 
+    p1a <- p1a +  theme(axis.text.x  = element_text(angle = getAngleXlabels(x_with_forcast_formatted), 
+                                                    hjust=1, size = sizeTicks, colour = "gray60"),
+                        axis.text.y  = element_text(vjust = 0.5, size = sizeTicks, colour = "gray60"),
+                        plot.title  = element_text(hjust = 0.5, size = sizeWarn, colour = infoTextColor), 
+                        axis.title=element_text(size =  sizeLabel),
+                        axis.text=element_text(size =  sizeTicks),
+                        panel.border = element_blank())
+    
+    
+    
+  }
   
   
-} else{ #empty plot
-  plot.new()
+  
+}else{ 
+  #empty plot
   showWarnings = TRUE
-  pbiWarning1 = cutStr2Show("Not enough data points", strCex = 1.1, partAvailable = 0.95)
-  pbiWarning<-paste(pbiWarning, pbiWarning1 , sep="\n")
+  pbiWarning1  = cutStr2Show("Not enough data points", strCex = sizeWarn/6, partAvailable = 0.85)
+  pbiWarning<-paste(pbiWarning, pbiWarning1 , sep="<br>")
 }
 
-#add warning as subtitle
-if(showWarnings)
-  title(main=NULL, sub=pbiWarning, outer=FALSE, col.sub = infoTextColor, cex.sub=1.1)
+#add warning as subtitle (or upper title since plotly has bug)
+if(showWarnings && !is.null(pbiWarning))
+{
+  p1a = ggplot() + labs (title = pbiWarning, caption = NULL) + theme_bw() +
+    theme(plot.title  = element_text(hjust = 0.5, size = sizeWarn), 
+          axis.title=element_text(size =  sizeLabel),
+          axis.text=element_text(size =  sizeTicks),
+          panel.border = element_blank())
+  ggp <- plotly_build(p1a)
+}else{
+  
+  # massage some plot atributes to make transition from ggplot to plotly smooth 
+  ggp <- plotly_build(p1a)
+  ggp$x$data[[1]]$text = paste(labTime, ": ", x_full, "<br>", labValue, ": ", round(y1,2) , sep ="" ) 
+  ggp$x$data[[2]]$text = paste(labTime, ": ", f_full, "<br>", labValue, ": ", round(y2,2) , sep ="" ) 
+  
+  if(length(ggp$x$data)>=3)
+  {
+    iii =  as.character(ggp$x$data[[3]]$x)
+    ggp$x$data[[3]]$text = paste(labTime, ": ", cf_full[iii], "<br> lower: ", lower1[iii],"<br> upper: ", upper1[iii], sep ="" ) 
+  }
+  
+  if(length(ggp$x$data)>=4)
+  {
+    iii =  as.character(ggp$x$data[[4]]$x)
+    ggp$x$data[[4]]$text = paste(labTime, ": ", cf_full[iii], "<br> lower: ", lower2[iii],"<br> upper: ", upper2[iii], sep ="" ) 
+  }
+  
+  
+  
+  ggp$x$layout$margin$l = ggp$x$layout$margin$l+10
+  
+  if(ggp$x$layout$xaxis$tickangle < -40)
+    ggp$x$layout$margin$b = ggp$x$layout$margin$b+40
+  
+}
+
+############# Create and save widget ###############
+
+p <- ggp
+
+disabledButtonsList <- list('toImage', 'sendDataToCloud', 'zoom2d', 'pan', 'pan2d', 'select2d', 'lasso2d', 'hoverClosestCartesian', 'hoverCompareCartesian')
+p$x$config$modeBarButtonsToRemove = disabledButtonsList
+
+p <- config(p, staticPlot = FALSE, editable = FALSE, sendData = FALSE, showLink = FALSE,
+            displaylogo = FALSE,  collaborate = FALSE, cloud=FALSE)
+
+internalSaveWidget(p, 'out.html')
+
+####################################################
+#display in R studio
+# if(Sys.getenv("RSTUDIO")!="")
+#   print(p)
