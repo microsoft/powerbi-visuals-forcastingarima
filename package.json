@@ -6,6 +6,6 @@
         "start": "pbiviz start"
     },
     "devDependencies": {
-      "powerbi-visuals-tools": "^1.5.0"      
+      "powerbi-visuals-tools": "^1.7.1"      
     }
 }
