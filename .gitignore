@@ -22,3 +22,4 @@ out.html_files/plotly-binding-4.6.0/plotly.js
 out.html_files/*
 .RData
 .Rhistory
+.tmp/*
