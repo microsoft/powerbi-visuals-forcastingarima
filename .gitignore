@@ -20,6 +20,8 @@ out.html_files/plotlyjs-1.16.3/LICENSE
 out.html_files/plotlyjs-1.16.3/plotly-latest.min.js
 out.html_files/plotly-binding-4.6.0/plotly.js
 out.html_files/*
+out.html_files
 .RData
 .Rhistory
 .tmp/*
+dist/PowerBI-visuals-forcasting-ARIMA.pbiviz

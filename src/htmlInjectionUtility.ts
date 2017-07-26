@@ -8,17 +8,17 @@ module powerbi.extensibility.visual {
   export function injectorReady() : boolean {
     return injectorCounter === 0;
   }
-  
+
   export function ParseElement(el: HTMLElement , target: HTMLElement) : Node[]
   {
     let arr: Node[] = [];
     if (!el || !el.hasChildNodes())
         return
-        
+
     let nodes = el.children;
     for (var i=0; i<nodes.length; i++)
     {
-      let tempNode: HTMLElement; 
+      let tempNode: HTMLElement;
       if (nodes.item(i).nodeName.toLowerCase() === 'script'){
         tempNode = createScriptNode(nodes.item(i));
       }
@@ -31,7 +31,7 @@ module powerbi.extensibility.visual {
     }
     return arr;
   }
-  
+
   function createScriptNode(refNode: Element): HTMLElement{
     let script = document.createElement('script');
     let attr = refNode.attributes;
