@@ -54,6 +54,7 @@ module powerbi.extensibility.visual {
         VisualUpdateType.Resize + VisualUpdateType.ResizeEnd
     ];
 
+<<<<<<< HEAD
     export class Visual implements IVisual {
         private rootElement: HTMLElement;
         private headNodes: Node[];
@@ -71,6 +72,8 @@ module powerbi.extensibility.visual {
         public update(options: VisualUpdateOptions): void {
 =======
 
+=======
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
      // in order to improve the performance, one can update the <head> only in the initial rendering.
     // set to 'true' if you are using different packages to create the widgets
     const updateHTMLHead: boolean = false;
@@ -291,12 +294,72 @@ module powerbi.extensibility.visual {
                 }
             }
 
+<<<<<<< HEAD
+=======
+            this.updateObjects(dataView.metadata.objects);
+
+            let payloadBase64: string = null;
+            if (dataView.scriptResult && dataView.scriptResult.payloadBase64) {
+                payloadBase64 = dataView.scriptResult.payloadBase64;
+            }
+
+            if (renderVisualUpdateType.indexOf(options.type) === -1) {
+                if (payloadBase64) {
+                    this.injectCodeFromPayload(payloadBase64);
+                }
+            }
+            
+            this.onResizing(options.viewport);
+        }
+
+// HTML 
+         public onResizing(finalViewport: IViewport): void {
+            /* add code to handle resizing of the view port */
+        }
+
+   private injectCodeFromPayload(payloadBase64: string): void {
+            // Inject HTML from payload, created in R
+            // the code is injected to the 'head' and 'body' sections.
+            // if the visual was already rendered, the previous DOM elements are cleared
+
+            ResetInjector();
+
+            if (!payloadBase64) 
+                return
+
+            // create 'virtual' HTML, so parsing is easier
+            let el: HTMLHtmlElement = document.createElement('html');
+            try {
+                el.innerHTML = window.atob(payloadBase64);
+            } catch (err) {
+                return;
+            }
+
+            // if 'updateHTMLHead == false', then the code updates the header data only on the 1st rendering
+            // this option allows loading and parsing of large and recurring scripts only once.
+            if (updateHTMLHead || this.headNodes.length === 0) {
+                while (this.headNodes.length > 0) {
+                    let tempNode: Node = this.headNodes.pop();
+                    document.head.removeChild(tempNode);
+                }
+                let headList: NodeListOf<HTMLHeadElement> = el.getElementsByTagName('head');
+                if (headList && headList.length > 0) {
+                    let head: HTMLHeadElement = headList[0];
+                    this.headNodes = ParseElement(head, document.head);
+                }
+            }
+
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
             // update 'body' nodes, under the rootElement
             while (this.bodyNodes.length > 0) {
                 let tempNode: Node = this.bodyNodes.pop();
                 this.rootElement.removeChild(tempNode);
             }
+<<<<<<< HEAD
             let bodyList: NodeListOf<HTMLBodyElement> = el.getElementsByTagName("body");
+=======
+            let bodyList: NodeListOf<HTMLBodyElement> = el.getElementsByTagName('body');
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
             if (bodyList && bodyList.length > 0) {
                 let body: HTMLBodyElement = bodyList[0];
                 this.bodyNodes = ParseElement(body, this.rootElement);
@@ -305,6 +368,7 @@ module powerbi.extensibility.visual {
             RunHTMLWidgetRenderer();
         }
 
+<<<<<<< HEAD
         private static parseSettings(dataView: DataView): VisualSettings {
             return VisualSettings.parse(dataView) as VisualSettings;
         }
@@ -371,6 +435,9 @@ module powerbi.extensibility.visual {
         }
 
 
+=======
+
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
 
  /**
          * This function gets called by the update function above. You should read the new values of the properties into 
@@ -438,6 +505,10 @@ module powerbi.extensibility.visual {
 	// USER - replace this block (END)
         }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
 
 >>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
 
@@ -475,7 +546,11 @@ module powerbi.extensibility.visual {
                         selector: null
                     });
 <<<<<<< HEAD
+<<<<<<< HEAD
                     if (this.settings.settings_seasonality_params.targetSeason == "manual") {
+=======
+                    if (this.settings_seasonality_params.targetSeason == "manual") {
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
 =======
                     if (this.settings_seasonality_params.targetSeason == "manual") {
 >>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
@@ -501,6 +576,9 @@ module powerbi.extensibility.visual {
                             maxp: this.settings_model_params.maxp,
                             maxd: this.settings_model_params.maxd,
                             maxq: this.settings_model_params.maxq                  
+<<<<<<< HEAD
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
+=======
 >>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
                         },
                     
@@ -517,6 +595,9 @@ module powerbi.extensibility.visual {
                             maxP: this.settings_model_params.maxP,
                             maxD: this.settings_model_params.maxD,
                             maxQ: this.settings_model_params.maxQ                   
+<<<<<<< HEAD
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
+=======
 >>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
                         },
                     
@@ -549,6 +630,9 @@ module powerbi.extensibility.visual {
                         objectName: objectName,
                         properties: {
                             lambda: inMinMax(this.settings_model_params.lambda, -0.5, 1.5)
+<<<<<<< HEAD
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
+=======
 >>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
                         },
                       
@@ -577,6 +661,9 @@ module powerbi.extensibility.visual {
                             p: this.settings_userModel_params.p,
                             d: this.settings_userModel_params.d,
                             q: this.settings_userModel_params.q
+<<<<<<< HEAD
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
+=======
 >>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
                            
                         },

@@ -26,6 +26,7 @@
 # REFERENCES: https://en.wikipedia.org/wiki/Autoregressive_integrated_moving_average, https://www.otexts.org/fpp/8
 
 source('./r_files/flatten_HTML.r')
+<<<<<<< HEAD
 
 
 #DEBUG in RStudio
@@ -54,11 +55,29 @@ if(file.exists(dirname(fileRda)))
 
 Sys.setlocale("LC_ALL","English") # internationalization
 >>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
+=======
+
+
+#DEBUG in RStudio
+# fileRda = "C:/Users/boefraty/projects/PBI/R/tempData.Rda"
+# if(file.exists(dirname(fileRda)))
+# {
+#   if(Sys.getenv("RSTUDIO")!="")
+#     load(file= fileRda)
+#   else
+#     save(list = ls(all.names = TRUE), file=fileRda)
+# }
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
 
 Sys.setlocale("LC_ALL","English") # internationalization
 
-############ User Parameters #########
 
+Sys.setlocale("LC_ALL","English") # internationalization
+
+<<<<<<< HEAD
+=======
+
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
 ############ User Parameters #########
 
 ##PBI_PARAM: Should additional info about the forcasting method be displayed?
@@ -248,6 +267,7 @@ transparency = 1
 if(exists("settings_graph_params_percentile"))
   transparency = as.numeric(settings_graph_params_percentile) / 100
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 ##PBI_PARAM: export out data to HTML?
 #Type:logical, Default:FALSE, Range:NA, PossibleValues:NA, Remarks: NA
@@ -269,6 +289,8 @@ if(exists("settings_export_params_limitExportSize"))
 
 =======
 >>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
+=======
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
 
 
 ###############Library Declarations###############
@@ -286,7 +308,10 @@ libraryRequireInstall("zoo")
 libraryRequireInstall("ggplot2");
 libraryRequireInstall("plotly")
 <<<<<<< HEAD
+<<<<<<< HEAD
 libraryRequireInstall("caTools")
+=======
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
 =======
 >>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
 
@@ -582,6 +607,7 @@ getAngleXlabels = function(mylabels)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ConvertDF64encoding = function (df, withoutEncoding = FALSE)
 {
   header_row <- paste(names(df), collapse=", ")
@@ -640,6 +666,8 @@ KeepOutDataInHTML = function(df, htmlFile = 'out.html', exportMethod = "copy", l
   
 }
 
+=======
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
 =======
 >>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
 
@@ -945,6 +973,7 @@ p <- config(p, staticPlot = FALSE, editable = FALSE, sendData = FALSE, showLink 
 internalSaveWidget(p, 'out.html')
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 # resolve bug in plotly (margin of 40 px)
@@ -981,8 +1010,13 @@ if(keepOutData)
 if(Sys.getenv("RSTUDIO")!="")
   print(p)
 =======
+=======
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
 ####################################################
 #display in R studio
 # if(Sys.getenv("RSTUDIO")!="")
 #   print(p)
+<<<<<<< HEAD
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
+=======
 >>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5

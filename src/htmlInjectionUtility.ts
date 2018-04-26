@@ -1,5 +1,6 @@
 module powerbi.extensibility.visual {
 <<<<<<< HEAD
+<<<<<<< HEAD
   "use strict";
   let injectorCounter: number = 0;
   export function ResetInjector(): void {
@@ -21,6 +22,8 @@ module powerbi.extensibility.visual {
         tempNode = createScriptNode(nodes.item(i));
       } else {
 =======
+=======
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
   let injectorCounter: number = 0;
 
   export function ResetInjector() : void {
@@ -46,6 +49,9 @@ module powerbi.extensibility.visual {
       }
       else
       {
+<<<<<<< HEAD
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
+=======
 >>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
         tempNode = <HTMLElement>nodes.item(i).cloneNode(true);
       }
@@ -55,6 +61,7 @@ module powerbi.extensibility.visual {
     return arr;
   }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   function createScriptNode(refNode: Element): HTMLElement {
     let script: HTMLScriptElement = document.createElement("script");
@@ -71,6 +78,8 @@ module powerbi.extensibility.visual {
     }
     script.innerHTML = refNode.innerHTML;
 =======
+=======
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
   function createScriptNode(refNode: Element): HTMLElement{
     let script = document.createElement('script');
     let attr = refNode.attributes;
@@ -88,11 +97,15 @@ module powerbi.extensibility.visual {
     }
 
     script.innerHTML = refNode.innerHTML;  
+<<<<<<< HEAD
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
+=======
 >>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
     return script;
   }
 
   export function RunHTMLWidgetRenderer(): void {
+<<<<<<< HEAD
 <<<<<<< HEAD
     // rendering HTML which was created by HTMLWidgets package
     // wait till all tje script elements are loaded
@@ -102,11 +115,16 @@ module powerbi.extensibility.visual {
         if (window.hasOwnProperty("HTMLWidgets") && window["HTMLWidgets"].staticRender) {
           window["HTMLWidgets"].staticRender();
 =======
+=======
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
     let intervalVar = window.setInterval(() => {
       if (injectorReady()) {
         window.clearInterval(intervalVar);
         if (window.hasOwnProperty('HTMLWidgets') && window['HTMLWidgets'].staticRender) {
           window['HTMLWidgets'].staticRender();
+<<<<<<< HEAD
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
+=======
 >>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
         }
       }

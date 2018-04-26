@@ -116,6 +116,7 @@ FindSrcReplacement <- function(str)
   return(str)
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 #ReadFullFileReplaceString
@@ -129,6 +130,10 @@ ReadFullFileReplaceString <- function(fnameIn, fnameOut, sourceString,targetStri
   writeLines(tx2, con = fnameOut)
 }
 #################################################
+=======
+#################################################
+
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
 =======
 #################################################
 
