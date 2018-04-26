@@ -25,25 +25,7 @@
  */
 module powerbi.extensibility.visual {
     "use strict";
-    // below is a snippet of a definition for an object which will contain the property values
-    // selected by the users
-    /*interface VisualSettings {
-        lineColor: string;
-    }*/
-
-    // to allow this scenario you should first the following JSON definition to the capabilities.json file
-    // under the "objects" property:
-    // "settings": {
-    //     "displayName": "Visual Settings",
-    //     "description": "Visual Settings Tooltip",
-    //     "properties": {
-    //         "lineColor": {
-    //         "displayName": "Line Color",
-    //         "type": { "fill": { "solid": { "color": true }}}
-    //         }
-    //     }
-    // }
-
+    
     // in order to improve the performance, one can update the <head> only in the initial rendering.
     // set to 'true' if you are using different packages to create the widgets
     const updateHTMLHead: boolean = false;

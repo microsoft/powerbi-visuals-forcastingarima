@@ -28,15 +28,6 @@
 source('./r_files/flatten_HTML.r')
 
 
-#DEBUG in RStudio
-fileRda = "C:/Users/boefraty/projects/PBI/R/tempData.Rda"
-if(file.exists(dirname(fileRda)))
-{
-  if(Sys.getenv("RSTUDIO")!="")
-    load(file= fileRda)
-  else
-    save(list = ls(all.names = TRUE), file=fileRda)
-}
 
 
 
@@ -831,20 +822,6 @@ if(length(timeSeries)>=minPoints) {
       
       p1a <- p1a + geom_ribbon( inherit.aes = FALSE , mapping = aes(x = id, ymin = lower2, ymax = upper2), fill = "gray50", alpha = 0.25)
     }
-    # if(upperConfInterval>0.01)
-    # {
-    #   lower1 = as.numeric(prediction$lower[,1])
-    #   upper1 = as.numeric(prediction$upper[,1])
-    #   lower2 = as.numeric(prediction$lower[,2])
-    #   upper2 = as.numeric(prediction$upper[,2])
-    #   id = x2
-    #   
-    #   names(lower1) = names(lower2) = names(upper1)= names(upper2) = names(f_full) = id   
-    #   cf_full = as.character(f_full)
-    #   
-    #   p1a <- p1a + geom_ribbon( inherit.aes = FALSE , mapping = aes(x = id, ymin = lower1 , ymax = upper1), fill = "blue4", alpha = 0.25)
-    #   p1a <- p1a + geom_ribbon( inherit.aes = FALSE , mapping = aes(x = id, ymin = lower2, ymax = upper2), fill = "gray50", alpha = 0.25)
-    # }
     
     #design 
     p1a <- p1a + labs (title = pbiInfo, caption = NULL) + theme_bw() 
@@ -948,10 +925,3 @@ if(keepOutData)
   KeepOutDataInHTML(df = exportDF, htmlFile = 'out.html', exportMethod = exportMethod, limitExportSize = limitExportSize)
 }
 
-
-
-####################################################
-#display in R studio
-#DEBUG
-if(Sys.getenv("RSTUDIO")!="")
-  print(p)
