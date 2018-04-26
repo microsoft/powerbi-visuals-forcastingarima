@@ -30,3 +30,8 @@ out.html.tmp
 out.html*
 out.html_files
 out.html_files/*
+assets/forecast_ARIMA_sample_HTML_based_testing.pbix
+*.npmignore
+.vscode/launch.json
+.vscode/settings.json
+*.pbiviz

@@ -24,163 +24,61 @@
  *  THE SOFTWARE.
  */
 module powerbi.extensibility.visual {
+    "use strict";
+    // below is a snippet of a definition for an object which will contain the property values
+    // selected by the users
+    /*interface VisualSettings {
+        lineColor: string;
+    }*/
 
-     // in order to improve the performance, one can update the <head> only in the initial rendering.
+    // to allow this scenario you should first the following JSON definition to the capabilities.json file
+    // under the "objects" property:
+    // "settings": {
+    //     "displayName": "Visual Settings",
+    //     "description": "Visual Settings Tooltip",
+    //     "properties": {
+    //         "lineColor": {
+    //         "displayName": "Line Color",
+    //         "type": { "fill": { "solid": { "color": true }}}
+    //         }
+    //     }
+    // }
+
+    // in order to improve the performance, one can update the <head> only in the initial rendering.
     // set to 'true' if you are using different packages to create the widgets
     const updateHTMLHead: boolean = false;
-    const renderVisualUpdateType: number[] = [VisualUpdateType.Resize, VisualUpdateType.ResizeEnd, VisualUpdateType.Resize + VisualUpdateType.ResizeEnd];
-
-
-	// USER - replace this block (START)
-    interface VisualSettingsForecastPlotParams {
-        show: boolean;
-        forecastLength: number;
-        confInterval1: string;
-        confInterval2: string;
-    }
-
-    interface VisualSettingsSeasonalityParams {
-        show: boolean;
-        targetSeason: string;
-        knownFrequency: number;
-    }
-
-    interface VisualSettingsModelParams {
-        maxp: string;
-        maxq: string;
-        maxP: string;
-        maxQ: string;
-        maxd: string;
-        maxD: string;
-        allowDrift: boolean;
-        allowMean: boolean;
-        stepwiseSelection: boolean;
-        boxCoxTransform: string;
-        lambda: number;
-    }
-    interface VisualSettingsUserModelParams {
-        show: boolean;
-        p: string;
-        q: string;
-        P: string;
-        Q: string;
-        d: string;
-        D: string;
-    }
-    interface VisualGraphParams {
-        show: boolean;
-        dataCol: string;
-        forecastCol: string;
-        percentile: number;
-        weight: number;
-    }
-    interface VisualAdditionalParams {
-        show: boolean;
-        textSize: number;
-        textColor: string;
-        infoCriteria: string;
-    }
-
-// USER - replace this block (END)
+    const renderVisualUpdateType: number[] = [
+        VisualUpdateType.Resize,
+        VisualUpdateType.ResizeEnd,
+        VisualUpdateType.Resize + VisualUpdateType.ResizeEnd
+    ];
 
     export class Visual implements IVisual {
-       //    private imageDiv: HTMLDivElement;
-        //   private imageElement: HTMLImageElement;
-        //HTML
         private rootElement: HTMLElement;
         private headNodes: Node[];
         private bodyNodes: Node[];
-
-
-
-// USER - replace this block (START)
-        private settings_forecastPlot_params: VisualSettingsForecastPlotParams;
-        private settings_seasonality_params: VisualSettingsSeasonalityParams;
-        private settings_model_params: VisualSettingsModelParams;
-        private settings_userModel_params: VisualSettingsUserModelParams;
-        private settings_graph_params: VisualGraphParams;
-        private settings_additional_params: VisualAdditionalParams;
-// USER - replace this block (END)
+        private settings: VisualSettings;
 
         public constructor(options: VisualConstructorOptions) {
-            // HTML 
-             if(options && options.element)
+            if (options && options.element) {
                 this.rootElement = options.element;
-
+            }
             this.headNodes = [];
             this.bodyNodes = [];
-			
-// USER - replace this block (START)
-            // default parameters
-            this.settings_forecastPlot_params = <VisualSettingsForecastPlotParams>{
-                forecastLength: 10,
-                confInterval1: "0.85",
-                confInterval2: "0.95"
-            };
-
-            this.settings_seasonality_params = <VisualSettingsSeasonalityParams>{
-                show: true,
-                targetSeason: "automatic",
-                knownFrequency: 12,
-            };
-
-
-            this.settings_model_params = <VisualSettingsModelParams>{
-                maxp: "3",
-                maxq: "3",
-                maxP: "2",
-                maxQ: "2",
-                maxd: "2",
-                maxD: "1",
-                allowDrift: true,
-                allowMean: true,
-                stepwiseSelection: true,
-                boxCoxTransform: "off",
-                lambda: 0.1,
-            }
-            this.settings_userModel_params = <VisualSettingsUserModelParams>{
-                show: false,
-                p: "1",
-                q: "1",
-                P: "1",
-                Q: "1",
-                d: "1",
-                D: "0",
-            }
-
-
-            this.settings_graph_params = <VisualGraphParams>{
-
-                dataCol: "blue",
-                forecastCol: "orange",
-                percentile: 40,
-                weight: 10
-
-            };
-
-            this.settings_additional_params = <VisualAdditionalParams>{
-                show: true,
-                textSize: 12,
-                textColor: "brown",
-                infoCriteria: "none"
-            };
-			
-// USER - replace this block (END)
         }
 
-        public update(options: VisualUpdateOptions) {
-             if (!options || !options.type || !options.viewport)
-                return;
+        public update(options: VisualUpdateOptions): void {
 
-            let dataViews: DataView[] = options.dataViews;
-            if (!dataViews || dataViews.length === 0)
+            if (!options ||
+                !options.type ||
+                !options.viewport ||
+                !options.dataViews ||
+                options.dataViews.length === 0 ||
+                !options.dataViews[0]) {
                 return;
-
-            let dataView: DataView = dataViews[0];
-            if (!dataView || !dataView.metadata)
-                return;
-
-            this.updateObjects(dataView.metadata.objects);
+            }
+            const dataView: DataView = options.dataViews[0];
+            this.settings = Visual.parseSettings(dataView);
 
             let payloadBase64: string = null;
             if (dataView.scriptResult && dataView.scriptResult.payloadBase64) {
@@ -191,28 +89,28 @@ module powerbi.extensibility.visual {
                 if (payloadBase64) {
                     this.injectCodeFromPayload(payloadBase64);
                 }
+            } else {
+                this.onResizing(options.viewport);
             }
-            
-            this.onResizing(options.viewport);
         }
 
-// HTML 
-         public onResizing(finalViewport: IViewport): void {
+        public onResizing(finalViewport: IViewport): void {
             /* add code to handle resizing of the view port */
         }
 
-   private injectCodeFromPayload(payloadBase64: string): void {
-            // Inject HTML from payload, created in R
+        private injectCodeFromPayload(payloadBase64: string): void {
+            // inject HTML from payload, created in R
             // the code is injected to the 'head' and 'body' sections.
             // if the visual was already rendered, the previous DOM elements are cleared
 
             ResetInjector();
 
-            if (!payloadBase64) 
-                return
+            if (!payloadBase64) {
+                return;
+            }
 
             // create 'virtual' HTML, so parsing is easier
-            let el: HTMLHtmlElement = document.createElement('html');
+            let el: HTMLHtmlElement = document.createElement("html");
             try {
                 el.innerHTML = window.atob(payloadBase64);
             } catch (err) {
@@ -226,7 +124,7 @@ module powerbi.extensibility.visual {
                     let tempNode: Node = this.headNodes.pop();
                     document.head.removeChild(tempNode);
                 }
-                let headList: NodeListOf<HTMLHeadElement> = el.getElementsByTagName('head');
+                let headList: NodeListOf<HTMLHeadElement> = el.getElementsByTagName("head");
                 if (headList && headList.length > 0) {
                     let head: HTMLHeadElement = headList[0];
                     this.headNodes = ParseElement(head, document.head);
@@ -238,7 +136,7 @@ module powerbi.extensibility.visual {
                 let tempNode: Node = this.bodyNodes.pop();
                 this.rootElement.removeChild(tempNode);
             }
-            let bodyList: NodeListOf<HTMLBodyElement> = el.getElementsByTagName('body');
+            let bodyList: NodeListOf<HTMLBodyElement> = el.getElementsByTagName("body");
             if (bodyList && bodyList.length > 0) {
                 let body: HTMLBodyElement = bodyList[0];
                 this.bodyNodes = ParseElement(body, this.rootElement);
@@ -247,76 +145,15 @@ module powerbi.extensibility.visual {
             RunHTMLWidgetRenderer();
         }
 
-
-
- /**
-         * This function gets called by the update function above. You should read the new values of the properties into 
-         * your settings object so you can use the new value in the enumerateObjectInstances function below.
-         * 
-         * Below is a code snippet demonstrating how to expose a single property called "lineColor" from the object called "settings"
-         * This object and property should be first defined in the capabilities.json file in the objects section.
-         * In this code we get the property value from the objects (and have a default value in case the property is undefined)
-         */
-        public updateObjects(objects: DataViewObjects) {
-          
-		  
-          // USER - replace this block (START)  
-            this.settings_forecastPlot_params = <VisualSettingsForecastPlotParams>{
-                forecastLength: getValue<number>(objects, 'settings_forecastPlot_params', 'forecastLength', 10),
-                confInterval1: getValue<string>(objects, 'settings_forecastPlot_params', 'confInterval1', "0.85"),
-                confInterval2: getValue<string>(objects, 'settings_forecastPlot_params', 'confInterval2', "0.95")
-            };
-
-            this.settings_seasonality_params = <VisualSettingsSeasonalityParams>{
-                show: getValue<boolean>(objects, 'settings_seasonality_params', 'show', true),
-                targetSeason: getValue<string>(objects, 'settings_seasonality_params', 'targetSeason', "year"),
-                knownFrequency: getValue<number>(objects, 'settings_seasonality_params', 'knownFrequency', 12),
-
-            }
-
-            this.settings_model_params = <VisualSettingsModelParams>{
-                maxp: getValue<string>(objects, 'settings_model_params', 'maxp', "3"),
-                maxq: getValue<string>(objects, 'settings_model_params', 'maxq', "3"),
-                maxP: getValue<string>(objects, 'settings_model_params', 'maxP', "2"),
-                maxQ: getValue<string>(objects, 'settings_model_params', 'maxQ', "2"),
-                maxd: getValue<string>(objects, 'settings_model_params', 'maxd', "2"),
-                maxD: getValue<string>(objects, 'settings_model_params', 'maxD', "1"),
-                allowDrift: getValue<boolean>(objects, 'settings_model_params', 'allowDrift', true),
-                allowMean: getValue<boolean>(objects, 'settings_model_params', 'allowMean', true),
-                stepwiseSelection: getValue<boolean>(objects, 'settings_model_params', 'stepwiseSelection', true),
-                boxCoxTransform: getValue<string>(objects, 'settings_model_params', 'boxCoxTransform', "off"),
-                lambda: getValue<number>(objects, 'settings_model_params', 'lambda', 0.1),
-            }
-
-            this.settings_userModel_params = <VisualSettingsUserModelParams>{
-                show: getValue<boolean>(objects, 'settings_userModel_params', 'show', false),
-                p: getValue<string>(objects, 'settings_userModel_params', 'p', "1"),
-                q: getValue<string>(objects, 'settings_userModel_params', 'q', "1"),
-                P: getValue<string>(objects, 'settings_userModel_params', 'P', "1"),
-                Q: getValue<string>(objects, 'settings_userModel_params', 'Q', "1"),
-                d: getValue<string>(objects, 'settings_userModel_params', 'd', "1"),
-                D: getValue<string>(objects, 'settings_userModel_params', 'D', "0"),
-            }
-
-            this.settings_graph_params = <VisualGraphParams>{
-                dataCol: getValue<string>(objects, 'settings_graph_params', 'dataCol', "blue"),
-                forecastCol: getValue<string>(objects, 'settings_graph_params', 'forecastCol', "orange"),
-                percentile: getValue<number>(objects, 'settings_graph_params', 'percentile', 40),
-                weight: getValue<number>(objects, 'settings_graph_params', 'weight', 10),
-            }
-
-            this.settings_additional_params = <VisualAdditionalParams>{
-                show: getValue<boolean>(objects, 'settings_additional_params', 'show', true),
-                textSize: getValue<number>(objects, 'settings_additional_params', 'textSize', 12),
-                textColor: getValue<string>(objects, 'settings_additional_params', 'textColor', "brown"),
-                infoCriteria: getValue<string>(objects, 'settings_additional_params', 'infoCriteria', "none")
-
-            }
-	// USER - replace this block (END)
+        private static parseSettings(dataView: DataView): VisualSettings {
+            return VisualSettings.parse(dataView) as VisualSettings;
         }
 
-
-
+        /** 
+         * This function gets called for each of the objects defined in the capabilities files and allows you to select which of the 
+         * objects and properties you want to expose to the users in the property pane.
+         * 
+         */
         public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
             let objectName = options.objectName;
             let objectEnumeration = [];
@@ -327,9 +164,9 @@ module powerbi.extensibility.visual {
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                            forecastLength: Math.round(inMinMax(this.settings_forecastPlot_params.forecastLength, 1, 1000000)),
-                            confInterval1: this.settings_forecastPlot_params.confInterval1,
-                            confInterval2: this.settings_forecastPlot_params.confInterval2
+                            forecastLength: Math.round(inMinMax(this.settings.settings_forecastPlot_params.forecastLength, 1, 1000000)),
+                            confInterval1: this.settings.settings_forecastPlot_params.confInterval1,
+                            confInterval2: this.settings.settings_forecastPlot_params.confInterval2
                         },
                         selector: null
                     });
@@ -340,16 +177,16 @@ module powerbi.extensibility.visual {
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                            show: this.settings_seasonality_params.show,
-                            targetSeason: this.settings_seasonality_params.targetSeason,
+                            show: this.settings.settings_seasonality_params.show,
+                            targetSeason: this.settings.settings_seasonality_params.targetSeason,
                         },
                         selector: null
                     });
-                    if (this.settings_seasonality_params.targetSeason == "manual") {
+                    if (this.settings.settings_seasonality_params.targetSeason == "manual") {
                         objectEnumeration.push({
                             objectName: objectName,
                             properties: {
-                                knownFrequency: inMinMax(this.settings_seasonality_params.knownFrequency, 2, 1000000)
+                                knownFrequency: inMinMax(this.settings.settings_seasonality_params.knownFrequency, 2, 1000000)
                             },
                             selector: null
                         });
@@ -360,19 +197,19 @@ module powerbi.extensibility.visual {
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                            maxp: this.settings_model_params.maxp,
-                            maxd: this.settings_model_params.maxd,
-                            maxq: this.settings_model_params.maxq                  
+                            maxp: this.settings.settings_model_params.maxp,
+                            maxd: this.settings.settings_model_params.maxd,
+                            maxq: this.settings.settings_model_params.maxq                  
                         },
                     
                     });
-                     if (this.settings_seasonality_params.show) {
+                     if (this.settings.settings_seasonality_params.show) {
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                            maxP: this.settings_model_params.maxP,
-                            maxD: this.settings_model_params.maxD,
-                            maxQ: this.settings_model_params.maxQ                   
+                            maxP: this.settings.settings_model_params.maxP,
+                            maxD: this.settings.settings_model_params.maxD,
+                            maxQ: this.settings.settings_model_params.maxQ                   
                         },
                     
                     });
@@ -380,17 +217,17 @@ module powerbi.extensibility.visual {
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                            allowDrift: this.settings_model_params.allowDrift,
-                            allowMean: this.settings_model_params.allowMean,
-                            boxCoxTransform: this.settings_model_params.boxCoxTransform,                     
+                            allowDrift: this.settings.settings_model_params.allowDrift,
+                            allowMean: this.settings.settings_model_params.allowMean,
+                            boxCoxTransform: this.settings.settings_model_params.boxCoxTransform,                     
                         },
                    
                     });
-                     if (this.settings_model_params.boxCoxTransform == "manual") {
+                     if (this.settings.settings_model_params.boxCoxTransform == "manual") {
                           objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                            lambda: inMinMax(this.settings_model_params.lambda, -0.5, 1.5)
+                            lambda: inMinMax(this.settings.settings_model_params.lambda, -0.5, 1.5)
                         },
                       
                     });
@@ -398,7 +235,7 @@ module powerbi.extensibility.visual {
                       objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                             stepwiseSelection: this.settings_model_params.stepwiseSelection
+                             stepwiseSelection: this.settings.settings_model_params.stepwiseSelection
                         },
                         selector: null
                     });
@@ -408,21 +245,21 @@ module powerbi.extensibility.visual {
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                            show: this.settings_userModel_params.show,
-                            p: this.settings_userModel_params.p,
-                            d: this.settings_userModel_params.d,
-                            q: this.settings_userModel_params.q
+                            show: this.settings.settings_userModel_params.show,
+                            p: this.settings.settings_userModel_params.p,
+                            d: this.settings.settings_userModel_params.d,
+                            q: this.settings.settings_userModel_params.q
                            
                         },
                         selector: null
                     });
-                    if (this.settings_seasonality_params.show) {
+                    if (this.settings.settings_seasonality_params.show) {
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                            P: this.settings_userModel_params.P,
-                            D: this.settings_userModel_params.D,
-                            Q: this.settings_userModel_params.Q
+                            P: this.settings.settings_userModel_params.P,
+                            D: this.settings.settings_userModel_params.D,
+                            Q: this.settings.settings_userModel_params.Q
                         },
                         selector: null
                     });
@@ -433,10 +270,10 @@ module powerbi.extensibility.visual {
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                            dataCol: this.settings_graph_params.dataCol,
-                            forecastCol: this.settings_graph_params.forecastCol,
-                            percentile: this.settings_graph_params.percentile,
-                            weight: this.settings_graph_params.weight
+                            dataCol: this.settings.settings_graph_params.dataCol,
+                            forecastCol: this.settings.settings_graph_params.forecastCol,
+                            percentile: this.settings.settings_graph_params.percentile,
+                            weight: this.settings.settings_graph_params.weight
 
                         },
                         selector: null
@@ -448,14 +285,25 @@ module powerbi.extensibility.visual {
 
                         objectName: objectName,
                         properties: {
-                            show: this.settings_additional_params.show,
-                            textSize: this.settings_additional_params.textSize,
-                            textColor: this.settings_additional_params.textColor,
-                            infoCriteria: this.settings_additional_params.infoCriteria
+                            show: this.settings.settings_additional_params.show,
+                            textSize: this.settings.settings_additional_params.textSize,
+                            textColor: this.settings.settings_additional_params.textColor,
+                            infoCriteria: this.settings.settings_additional_params.infoCriteria
                         },
                         selector: null
                     });
 
+                    break;
+                    case 'settings_export_params':
+                    objectEnumeration.push({
+                        objectName: objectName,
+                        properties: {
+                            show: this.settings.settings_export_params.show,
+                            limitExportSize: this.settings.settings_export_params.limitExportSize,
+                            method: this.settings.settings_export_params.method
+                        },
+                        selector: null
+                    });
                     break;
             };
 		// USER - replace this block (END)
