@@ -1,7 +1,11 @@
 {
     "name": "visual",
     "scripts": {
+<<<<<<< HEAD
         "postinstall": "pbiviz update 1.11.0",
+=======
+        "postinstall": "pbiviz update 1.7.0",
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5
         "pbiviz": "pbiviz",
         "package": "pbiviz package",
         "lint": "tslint -r \"node_modules/tslint-microsoft-contrib\" \"+(src)/**/*.ts\"",
@@ -10,7 +14,13 @@
     "devDependencies": {
         "tslint": "^4.4.2",
         "tslint-microsoft-contrib": "^4.0.0",
+<<<<<<< HEAD
         "powerbi-visuals-tools": "1.11.0",
         "powerbi-visuals-utils-dataviewutils": "1.2.0"
     }
 }
+=======
+        "powerbi-visuals-tools": "1.7.1"
+    }
+}
+>>>>>>> 55f6e110d21b469e720425590dd050b9372c4ca5

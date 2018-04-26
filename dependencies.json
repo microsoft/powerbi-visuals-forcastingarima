@@ -1,16 +1,15 @@
 {
-  "cranPackages": [
-    {
+  "cranPackages": [{
       "name": "zoo",
       "displayName": "zoo: S3 Infrastructure for Regular and Irregular Time Series",
       "url": "https://cran.r-project.org/web/packages/zoo/index.html"
     },
-	{
+    {
       "name": "scales",
       "displayName": "scales: Scale Functions for Visualization",
       "url": "https://cran.r-project.org/web/packages/scales/index.html"
     },
-	{
+    {
       "name": "reshape2",
       "displayName": "reshape2: Flexibly Reshape Data: A Reboot of the Reshape Package",
       "url": "https://cran.r-project.org/web/packages/reshape2/index.html"
@@ -40,6 +39,5 @@
       "displayName": "caTools",
       "url": "https://cran.r-project.org/web/packages/caTools/index.html"
     }
-    
   ]
 }
