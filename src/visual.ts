@@ -25,7 +25,6 @@
  */
 module powerbi.extensibility.visual {
     "use strict";
-    
     // in order to improve the performance, one can update the <head> only in the initial rendering.
     // set to 'true' if you are using different packages to create the widgets
     const updateHTMLHead: boolean = false;
@@ -40,7 +39,6 @@ module powerbi.extensibility.visual {
         private headNodes: Node[];
         private bodyNodes: Node[];
         private settings: VisualSettings;
-
         public constructor(options: VisualConstructorOptions) {
             if (options && options.element) {
                 this.rootElement = options.element;
@@ -61,7 +59,6 @@ module powerbi.extensibility.visual {
             }
             const dataView: DataView = options.dataViews[0];
             this.settings = Visual.parseSettings(dataView);
-
             let payloadBase64: string = null;
             if (dataView.scriptResult && dataView.scriptResult.payloadBase64) {
                 payloadBase64 = dataView.scriptResult.payloadBase64;
@@ -84,13 +81,10 @@ module powerbi.extensibility.visual {
             // inject HTML from payload, created in R
             // the code is injected to the 'head' and 'body' sections.
             // if the visual was already rendered, the previous DOM elements are cleared
-
             ResetInjector();
-
             if (!payloadBase64) {
                 return;
             }
-
             // create 'virtual' HTML, so parsing is easier
             let el: HTMLHtmlElement = document.createElement("html");
             try {
@@ -98,7 +92,6 @@ module powerbi.extensibility.visual {
             } catch (err) {
                 return;
             }
-
             // if 'updateHTMLHead == false', then the code updates the header data only on the 1st rendering
             // this option allows loading and parsing of large and recurring scripts only once.
             if (updateHTMLHead || this.headNodes.length === 0) {
@@ -112,7 +105,6 @@ module powerbi.extensibility.visual {
                     this.headNodes = ParseElement(head, document.head);
                 }
             }
-
             // update 'body' nodes, under the rootElement
             while (this.bodyNodes.length > 0) {
                 let tempNode: Node = this.bodyNodes.pop();
@@ -123,7 +115,6 @@ module powerbi.extensibility.visual {
                 let body: HTMLBodyElement = bodyList[0];
                 this.bodyNodes = ParseElement(body, this.rootElement);
             }
-
             RunHTMLWidgetRenderer();
         }
 
@@ -139,8 +130,7 @@ module powerbi.extensibility.visual {
         public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
             let objectName = options.objectName;
             let objectEnumeration = [];
-
-			// USER - replace this block (START)
+            // USER - replace this block (START)
             switch (objectName) {
                 case 'settings_forecastPlot_params':
                     objectEnumeration.push({
@@ -152,9 +142,7 @@ module powerbi.extensibility.visual {
                         },
                         selector: null
                     });
-
                     break;
-
                 case 'settings_seasonality_params':
                     objectEnumeration.push({
                         objectName: objectName,
@@ -174,55 +162,49 @@ module powerbi.extensibility.visual {
                         });
                     }
                     break;
-
                 case 'settings_model_params':
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
                             maxp: this.settings.settings_model_params.maxp,
                             maxd: this.settings.settings_model_params.maxd,
-                            maxq: this.settings.settings_model_params.maxq                  
+                            maxq: this.settings.settings_model_params.maxq
                         },
-                    
                     });
-                     if (this.settings.settings_seasonality_params.show) {
-                    objectEnumeration.push({
-                        objectName: objectName,
-                        properties: {
-                            maxP: this.settings.settings_model_params.maxP,
-                            maxD: this.settings.settings_model_params.maxD,
-                            maxQ: this.settings.settings_model_params.maxQ                   
-                        },
-                    
-                    });
-                     }
+                    if (this.settings.settings_seasonality_params.show) {
+                        objectEnumeration.push({
+                            objectName: objectName,
+                            properties: {
+                                maxP: this.settings.settings_model_params.maxP,
+                                maxD: this.settings.settings_model_params.maxD,
+                                maxQ: this.settings.settings_model_params.maxQ
+                            },
+                        });
+                    }
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
                             allowDrift: this.settings.settings_model_params.allowDrift,
                             allowMean: this.settings.settings_model_params.allowMean,
-                            boxCoxTransform: this.settings.settings_model_params.boxCoxTransform,                     
+                            boxCoxTransform: this.settings.settings_model_params.boxCoxTransform,
                         },
-                   
                     });
-                     if (this.settings.settings_model_params.boxCoxTransform == "manual") {
-                          objectEnumeration.push({
+                    if (this.settings.settings_model_params.boxCoxTransform == "manual") {
+                        objectEnumeration.push({
+                            objectName: objectName,
+                            properties: {
+                                lambda: inMinMax(this.settings.settings_model_params.lambda, -0.5, 1.5)
+                            },
+                        });
+                    }
+                    objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                            lambda: inMinMax(this.settings.settings_model_params.lambda, -0.5, 1.5)
-                        },
-                      
-                    });
-                     }
-                      objectEnumeration.push({
-                        objectName: objectName,
-                        properties: {
-                             stepwiseSelection: this.settings.settings_model_params.stepwiseSelection
+                            stepwiseSelection: this.settings.settings_model_params.stepwiseSelection
                         },
                         selector: null
                     });
                     break;
-
                 case 'settings_userModel_params':
                     objectEnumeration.push({
                         objectName: objectName,
@@ -231,23 +213,21 @@ module powerbi.extensibility.visual {
                             p: this.settings.settings_userModel_params.p,
                             d: this.settings.settings_userModel_params.d,
                             q: this.settings.settings_userModel_params.q
-                           
                         },
                         selector: null
                     });
                     if (this.settings.settings_seasonality_params.show) {
-                    objectEnumeration.push({
-                        objectName: objectName,
-                        properties: {
-                            P: this.settings.settings_userModel_params.P,
-                            D: this.settings.settings_userModel_params.D,
-                            Q: this.settings.settings_userModel_params.Q
-                        },
-                        selector: null
-                    });
+                        objectEnumeration.push({
+                            objectName: objectName,
+                            properties: {
+                                P: this.settings.settings_userModel_params.P,
+                                D: this.settings.settings_userModel_params.D,
+                                Q: this.settings.settings_userModel_params.Q
+                            },
+                            selector: null
+                        });
                     }
                     break;
-
                 case 'settings_graph_params':
                     objectEnumeration.push({
                         objectName: objectName,
@@ -256,12 +236,10 @@ module powerbi.extensibility.visual {
                             forecastCol: this.settings.settings_graph_params.forecastCol,
                             percentile: this.settings.settings_graph_params.percentile,
                             weight: this.settings.settings_graph_params.weight
-
                         },
                         selector: null
                     });
                     break;
-
                 case 'settings_additional_params':
                     objectEnumeration.push({
 
@@ -274,9 +252,8 @@ module powerbi.extensibility.visual {
                         },
                         selector: null
                     });
-
                     break;
-                    case 'settings_export_params':
+                case 'settings_export_params':
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
@@ -288,8 +265,7 @@ module powerbi.extensibility.visual {
                     });
                     break;
             };
-		// USER - replace this block (END)
-
+            // USER - replace this block (END)
             return objectEnumeration;
         }
     }
