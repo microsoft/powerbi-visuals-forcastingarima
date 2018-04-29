@@ -1,10 +1,7 @@
 node_modules
 .tmp
-dist
 .api
 *.log
-dist/PowerBI-visuals-forcasting-ARIMA.pbiviz
-dist/PowerBI-visuals-forcasting-ARIMA.pbiviz
 out.html
 out.html.tmp
 out.html_files/crosstalk-1.0.0/css/crosstalk.css
@@ -24,8 +21,6 @@ out.html_files
 .RData
 .Rhistory
 .tmp/*
-dist/PowerBI-visuals-forcasting-ARIMA.pbiviz
-dist/PowerBI-visuals-forcasting-ARIMA.pbiviz
 out.html.tmp
 out.html*
 out.html_files
@@ -34,7 +29,4 @@ assets/forecast_ARIMA_sample_HTML_based_testing.pbix
 *.npmignore
 .vscode/launch.json
 .vscode/settings.json
-*.pbiviz
 assets/CaptureExport.PNG
-dist/PowerBI-visuals-forcasting-ARIMA.pbiviz
-dist/PowerBI-visuals-forcasting-ARIMA.pbiviz
