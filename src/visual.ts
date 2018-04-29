@@ -123,10 +123,10 @@ module powerbi.extensibility.visual {
         }
 
         /** 
-         * This function gets called for each of the objects defined in the capabilities files and allows you to select which of the 
-         * objects and properties you want to expose to the users in the property pane.
-         * 
-         */
+        * This function gets called for each of the objects defined in the capabilities files and allows you to select which of the 
+        * objects and properties you want to expose to the users in the property pane.
+        * 
+        */
         public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
             let objectName = options.objectName;
             let objectEnumeration = [];
@@ -152,7 +152,7 @@ module powerbi.extensibility.visual {
                         },
                         selector: null
                     });
-                    if (this.settings.settings_seasonality_params.targetSeason == "manual") {
+                    if (this.settings.settings_seasonality_params.targetSeason === "manual") {
                         objectEnumeration.push({
                             objectName: objectName,
                             properties: {
@@ -189,7 +189,7 @@ module powerbi.extensibility.visual {
                             boxCoxTransform: this.settings.settings_model_params.boxCoxTransform,
                         },
                     });
-                    if (this.settings.settings_model_params.boxCoxTransform == "manual") {
+                    if (this.settings.settings_model_params.boxCoxTransform === "manual") {
                         objectEnumeration.push({
                             objectName: objectName,
                             properties: {

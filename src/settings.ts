@@ -39,28 +39,28 @@ module powerbi.extensibility.visual {
   }
 
   export class VisualSettings extends DataViewObjectsParser {
-    public settings_forecastPlot_params: settings_forecastPlot_params = new settings_forecastPlot_params();
-    public settings_seasonality_params: settings_seasonality_params = new settings_seasonality_params();
-    public settings_model_params: settings_model_params = new settings_model_params();
-    public settings_userModel_params: settings_userModel_params = new settings_userModel_params();
-    public settings_graph_params: settings_graph_params = new settings_graph_params();
-    public settings_additional_params: settings_additional_params = new settings_additional_params();
-    public settings_export_params: settings_export_params = new settings_export_params();
+    public settings_forecastPlot_params: SettingsForecastPlotParams = new SettingsForecastPlotParams();
+    public settings_seasonality_params: SettingsSeasonalityParams = new SettingsSeasonalityParams();
+    public settings_model_params: SettingModelParams = new SettingModelParams();
+    public settings_userModel_params: SettingsUserModelParams = new SettingsUserModelParams();
+    public settings_graph_params: SettingsGraphParams = new SettingsGraphParams();
+    public settings_additional_params: SettingsAdditionalParams = new SettingsAdditionalParams();
+    public settings_export_params: SettingsExportParams = new SettingsExportParams();
 
   }
 
-  export class settings_forecastPlot_params {
+  export class SettingsForecastPlotParams {
     public forecastLength: number = 10;
     public confInterval1: string = "0.85";
     public confInterval2: string = "0.95";
 
   }
-  export class settings_seasonality_params {
+  export class SettingsSeasonalityParams {
     public show: boolean = true;
     public targetSeason: string = "automatic";
     public knownFrequency: number = 12;
   }
-  export class settings_model_params {
+  export class SettingModelParams {
     public maxp: string = "3";
     public maxq: string = "3";
     public maxP: string = "2";
@@ -73,7 +73,7 @@ module powerbi.extensibility.visual {
     public boxCoxTransform: string = "off";
     public lambda: number = 0.1;
   }
-  export class settings_userModel_params {
+  export class SettingsUserModelParams {
     public show: boolean = false;
     public p: string = "1";
     public q: string = "1";
@@ -82,19 +82,19 @@ module powerbi.extensibility.visual {
     public d: string = "1";
     public D: string = "0";
   }
-  export class settings_graph_params {
+  export class SettingsGraphParams {
     public dataCol: string = "blue";
     public forecastCol: string = "orange";
     public percentile: number = 40;
     public weight: number = 10;
   }
-  export class settings_additional_params {
+  export class SettingsAdditionalParams {
     public show: boolean = true;
     public textSize: number = 12;
     public textColor: string = "brown";
     public infoCriteria: string = "none";
   }
-  export class settings_export_params {
+  export class SettingsExportParams {
     public show: boolean = false;
     public limitExportSize: string = "10000";
     public method: string = "copy";
