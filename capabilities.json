@@ -696,7 +696,7 @@
     },
     "settings_export_params": {
       "displayName": "Export data",
-      "description": "Export result of clustering",
+      "description": "Export results",
       "properties": {
         "show": {
           "type": {
