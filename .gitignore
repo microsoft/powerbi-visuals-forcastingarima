@@ -30,3 +30,7 @@ assets/forecast_ARIMA_sample_HTML_based_testing.pbix
 .vscode/launch.json
 .vscode/settings.json
 assets/CaptureExport.PNG
+dist/
+dist/*
+*.pbiviz 
+
